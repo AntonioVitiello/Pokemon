@@ -1,10 +1,10 @@
 package com.vit.ant.pokemon.network
 
 import android.util.Log
+import com.vit.ant.pokemon.BuildConfig
 import com.vit.ant.pokemon.network.dto.PokemonDetailsResponse
 import com.vit.ant.pokemon.network.dto.PokemonResponse
 import io.reactivex.Single
-import io.reactivex.android.BuildConfig
 import io.reactivex.plugins.RxJavaPlugins
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -40,14 +40,14 @@ class NetworkProvider {
         }.build()
 
         private var apiService = Retrofit.Builder()
-                .baseUrl(ENDPOINT)
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .baseUrl(ENDPOINT)
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
 //            .addConverterFactory(GsonConverterFactory.create())
-                .addConverterFactory(JacksonConverterFactory.create())
-                .callbackExecutor(Executors.newCachedThreadPool())
-                .client(httpClient)
-                .build()
-                .create(ApiService::class.java)
+            .addConverterFactory(JacksonConverterFactory.create())
+            .callbackExecutor(Executors.newCachedThreadPool())
+            .client(httpClient)
+            .build()
+            .create(ApiService::class.java)
     }
 
     fun getPokemons(offset: Int, limit: Int): Single<PokemonResponse> {

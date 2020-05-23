@@ -22,13 +22,17 @@ class PokemonListViewModel : ViewModel() {
     var errorLiveData: MutableLiveData<Throwable> = MutableLiveData()
 
     companion object {
-        private const val TAG = "HomeViewModel"
+        const val TAG = "HomeViewModel"
+        const val limit = 964
     }
 
+    fun nextPokemonsPage(activity: FragmentActivity) {
+        getPokemons(0, limit, WeakReference(activity))
+    }
 
-    fun getPokemons(activity: WeakReference<FragmentActivity>) {
+    private fun getPokemons(offset: Int, limit: Int, activity: WeakReference<FragmentActivity>) {
         compositeDisposable.add(
-            PokemonRepository.getPokemons(0, 964)
+            PokemonRepository.getPokemons(offset, limit)
                 .manageLoading(activity.get()!!)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

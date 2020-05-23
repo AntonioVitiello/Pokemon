@@ -30,13 +30,6 @@ class PokemonDetailsFragment : Fragment() {
 
     companion object {
         const val TAG = "PokemonDetailsFragment"
-        const val POKEMON_ID_BUNDLE_KEY = "pokemon_id_bundle_key"
-
-        fun newInstance(pokemonId: Int) = PokemonDetailsFragment().apply {
-            arguments = Bundle().apply {
-                putInt(POKEMON_ID_BUNDLE_KEY, pokemonId)
-            }
-        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,7 +52,7 @@ class PokemonDetailsFragment : Fragment() {
             fillPokemonDetails(model)
         })
 
-        mPokemonId = arguments!!.getInt(POKEMON_ID_BUNDLE_KEY)
+        mPokemonId = PokemonDetailsFragmentArgs.fromBundle(requireArguments()).id
         mViewModel.getPokemonDetails(mPokemonId, WeakReference(requireActivity()))
 
         initComponents()

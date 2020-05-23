@@ -4,7 +4,6 @@ import com.vit.ant.pokemon.model.PokemonDetailsModel
 import com.vit.ant.pokemon.model.PokemonModel
 import com.vit.ant.pokemon.network.dto.PokemonDetailsResponse
 import com.vit.ant.pokemon.network.dto.PokemonResponse
-import com.vit.ant.pokemon.tools.Utils.oneDecimalFormater
 import com.vit.ant.pokemon.tools.Utils.urlToId
 
 /**
@@ -38,7 +37,11 @@ fun mapPokemonDetails(pokemonResponse: PokemonDetailsResponse): PokemonDetailsMo
                 name = it.stat?.name
                 url = it.stat?.url
             }
-        }
+        }?.sortedWith(Comparator { o1, o2 ->
+            val length1 = o1.name?.length ?: 0
+            val length2 = o2.name?.length ?: 0
+            return@Comparator -length1.compareTo(length2)
+        })
     }
 }
 

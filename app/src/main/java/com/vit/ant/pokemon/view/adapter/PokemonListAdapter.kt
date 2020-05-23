@@ -4,7 +4,7 @@ package com.vit.ant.pokemon.view.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.widget.TextViewCompat
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import com.vit.ant.pokemon.R
@@ -15,32 +15,30 @@ import kotlinx.android.synthetic.main.home_list_item.view.*
 /**
  * Created by Vitiello Antonio
  */
-class PokemonListAdapter(private val listener: (Int) -> Unit) :
-    RecyclerView.Adapter<PokemonListAdapter.ViewHolder>() {
-    private val pokemons = mutableListOf<PokemonModel>()
+class PokemonListAdapter(private val listener: (Int) -> Unit) : RecyclerView.Adapter<PokemonListAdapter.ViewHolder>() {
+    private val mPokemons = mutableListOf<PokemonModel>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val itemView =
-            LayoutInflater.from(parent.context).inflate(R.layout.home_list_item, parent, false)
-        return ViewHolder(itemView, listener)
+        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.home_list_item, parent, false)
+        return ViewHolder(itemView)
     }
 
-    override fun getItemCount() = pokemons.size
+    override fun getItemCount() = mPokemons.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) =
-        holder.bindItem(pokemons[position])
+        holder.bindItem(mPokemons[position])
 
     fun switchData(data: List<PokemonModel>?) {
-        pokemons.clear()
+        mPokemons.clear()
         data?.let {
-            pokemons.addAll(data)
+            mPokemons.addAll(data)
         }
         notifyDataSetChanged()
     }
 
 
-    inner class ViewHolder(itemView: View, listener: (Int) -> Unit) :
-        RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
         fun bindItem(pokemonModel: PokemonModel) {
 
             with(itemView) {
@@ -57,6 +55,5 @@ class PokemonListAdapter(private val listener: (Int) -> Unit) :
             }
         }
     }
-
 
 }

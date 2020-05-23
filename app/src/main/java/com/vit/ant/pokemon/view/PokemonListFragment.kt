@@ -7,13 +7,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.vit.ant.pokemon.R
-import com.vit.ant.pokemon.tools.addToStackFragment
 import com.vit.ant.pokemon.view.adapter.PokemonListAdapter
 import com.vit.ant.pokemon.viewmodel.PokemonListViewModel
 import kotlinx.android.synthetic.main.fragment_home.*
-import java.lang.ref.WeakReference
 
 
 /**
@@ -26,8 +26,6 @@ class PokemonListFragment : Fragment() {
 
     companion object {
         const val TAG = "PokemonListFragment"
-
-        fun newInstance() = PokemonListFragment()
     }
 
 
@@ -36,11 +34,7 @@ class PokemonListFragment : Fragment() {
         mViewModel = ViewModelProvider(this).get(PokemonListViewModel::class.java)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
@@ -51,19 +45,18 @@ class PokemonListFragment : Fragment() {
             mAdapter.switchData(models)
         })
 
-        mViewModel.getPokemons(WeakReference(requireActivity()))
+        mViewModel.nextPokemonsPage(requireActivity())
 
         initComponents()
     }
 
     private fun initComponents() {
+        val navController = Navigation.findNavController(requireView())
         val gridLayoutManager = GridLayoutManager(requireContext(), 2)
         pokemonRecyclerView.layoutManager = gridLayoutManager
         mAdapter = PokemonListAdapter { id ->
-            addToStackFragment(
-                R.id.fragmentContainer, PokemonDetailsFragment.newInstance(id),
-                PokemonDetailsFragment.TAG
-            )
+            navController.navigate(PokemonListFragmentDirections.actionPokemonListFragmentToPokemonDetailsFragment(id))
+//            navController.navigate(R.id.action_pokemonListFragment_to_pokemonDetailsFragment)
         }
         pokemonRecyclerView.adapter = mAdapter
     }
