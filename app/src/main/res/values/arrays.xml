@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="autosize_text_sizes">
+        <item>28dp</item>
+        <item>26dp</item>
+        <item>24dp</item>
+        <item>20dp</item>
+        <item>18dp</item>
+        <item>16dp</item>
+    </array>
+</resources>

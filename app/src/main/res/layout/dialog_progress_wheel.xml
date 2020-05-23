@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary_50"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <com.vit.ant.pokemon.view.widget.ProgressWheel
+        android:id="@+id/progressWheel"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        app:pwAutoStart="true"
+        app:pwBarColor="@color/wheelSolid"
+        app:pwBarLength="40dp"
+        app:pwBarWidth="6dp"
+        app:pwRimColor="@color/wheelEmpty"
+        app:pwRimWidth="4dp"
+        app:pwSpinSpeed="5dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="@string/progress_wheel_loading_text" />
+
+</LinearLayout>

@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Pokemon</string>
+    <string name="pokemon_height">Altezza: %s m</string>
+    <string name="pokemon_weight">Peso: %s kg</string>
+    <string name="type_title">Tipo:</string>
+    <string name="statistics_title">Statistiche:</string>
+    <string name="stats_label">%s:\n%d / %d</string>
+    <string name="progress_wheel_loading_text">Caricamento...</string>
+</resources>
