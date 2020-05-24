@@ -9,15 +9,15 @@
 
     <com.vit.ant.pokemon.view.widget.ProgressWheel
         android:id="@+id/progressWheel"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         app:pwAutoStart="true"
         app:pwBarColor="@color/wheelSolid"
         app:pwBarLength="40dp"
-        app:pwBarWidth="6dp"
+        app:pwBarWidth="14dp"
         app:pwRimColor="@color/wheelEmpty"
-        app:pwRimWidth="4dp"
-        app:pwSpinSpeed="5dp" />
+        app:pwRimWidth="14dp"
+        app:pwSpinSpeed="4dp" />
 
     <TextView
         android:layout_width="wrap_content"

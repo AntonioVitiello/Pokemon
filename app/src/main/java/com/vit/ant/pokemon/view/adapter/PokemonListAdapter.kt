@@ -1,6 +1,7 @@
 package com.vit.ant.pokemon.view.adapter
 
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +17,30 @@ import kotlinx.android.synthetic.main.home_list_item.view.*
  * Created by Vitiello Antonio
  */
 class PokemonListAdapter(private val listener: (Int) -> Unit) : RecyclerView.Adapter<PokemonListAdapter.ViewHolder>() {
-    private val mPokemons = mutableListOf<PokemonModel>()
+    val mPokemons = mutableListOf<PokemonModel>()
+    private val diffUtilCallback = object : DiffUtil.Callback() {
+        lateinit var mNewPokemons: List<PokemonModel>
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return mPokemons[oldItemPosition].id == mNewPokemons[newItemPosition].id
+        }
+
+        override fun getOldListSize(): Int {
+            return mPokemons.size
+        }
+
+        override fun getNewListSize(): Int {
+            return mNewPokemons.size
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return mPokemons[oldItemPosition].name == mNewPokemons[newItemPosition].name
+        }
+    }
+
+    companion object {
+        const val TAG = "PokemonListAdapter"
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.home_list_item, parent, false)
@@ -29,13 +53,17 @@ class PokemonListAdapter(private val listener: (Int) -> Unit) : RecyclerView.Ada
         holder.bindItem(mPokemons[position])
 
     fun switchData(data: List<PokemonModel>?) {
-        mPokemons.clear()
         data?.let {
-            mPokemons.addAll(data)
+            diffUtilCallback.mNewPokemons = it
+            val diffResult = DiffUtil.calculateDiff(diffUtilCallback)
+            mPokemons.clear()
+            mPokemons.addAll(it)
+            diffResult.dispatchUpdatesTo(this@PokemonListAdapter)
+        } ?: kotlin.run {
+            mPokemons.clear()
+            notifyDataSetChanged()
         }
-        notifyDataSetChanged()
     }
-
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -43,6 +71,7 @@ class PokemonListAdapter(private val listener: (Int) -> Unit) : RecyclerView.Ada
 
             with(itemView) {
                 pokemonName.text = pokemonModel.name
+                Log.d(TAG, "Start loading image: ${pokemonModel.imageUrl}")
                 Picasso.get()
                     .load(pokemonModel.imageUrl)
                     .placeholder(R.drawable.pokeball)
