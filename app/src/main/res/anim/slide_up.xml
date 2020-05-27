@@ -3,8 +3,8 @@
 
     <translate
         android:duration="@android:integer/config_longAnimTime"
-        android:fromYDelta="-1280"
         android:interpolator="@android:anim/accelerate_interpolator"
+        android:fromYDelta="-100%"
         android:toYDelta="0" />
 
 </set>

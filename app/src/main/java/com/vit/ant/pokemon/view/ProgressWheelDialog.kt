@@ -16,11 +16,11 @@ import com.vit.ant.pokemon.R
 class ProgressWheelDialog : FullScreenDialogFragment() {
 
     companion object {
-        const val TAG = "LoadingDialogFragment"
+        const val TAG = "ProgressWheelDialog"
         var showingLoading = false
-        private const val BUNDLE_KEY_MESSAGE = TAG.plus("_BUNDLE_KEY_MESSAGE")
+        private const val BUNDLE_KEY_MESSAGE = TAG.plus("bundle_key_message")
 
-        fun newInstance(loadingText:String? = null):ProgressWheelDialog {
+        fun newInstance(loadingText: String? = null): ProgressWheelDialog {
             val args = Bundle().apply {
                 putString(BUNDLE_KEY_MESSAGE, loadingText)
             }
@@ -30,7 +30,7 @@ class ProgressWheelDialog : FullScreenDialogFragment() {
             return fragment
         }
 
-        fun show(activity: FragmentActivity, loadingText:String? = null) = synchronized(activity) {
+        fun show(activity: FragmentActivity, loadingText: String? = null) = synchronized(activity) {
             retrieveDialogFragment(activity)?.dismissAllowingStateLoss()
             newInstance(loadingText).show(activity.supportFragmentManager, TAG)
             showingLoading = true
@@ -40,7 +40,10 @@ class ProgressWheelDialog : FullScreenDialogFragment() {
             showingLoading = false
             retrieveDialogFragment(activity)?.dismissAllowingStateLoss()
                 ?: run { // wait to allow the fragment to be attached
-                    Handler(Looper.getMainLooper()).postDelayed({ if (!showingLoading) retrieveDialogFragment(activity)?.dismissAllowingStateLoss() }, 300)
+                    Handler(Looper.getMainLooper()).postDelayed(
+                        { if (!showingLoading) retrieveDialogFragment(activity)?.dismissAllowingStateLoss() },
+                        300
+                    )
                 }
         }
 

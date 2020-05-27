@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vit.ant.pokemon.R
 import com.vit.ant.pokemon.view.adapter.PokemonListAdapter
+import com.vit.ant.pokemon.view.widget.FloatingToastDialog
+import com.vit.ant.pokemon.view.widget.FloatingToastDialog.FloatingToastType
 import com.vit.ant.pokemon.viewmodel.PokemonListViewModel
 import kotlinx.android.synthetic.main.fragment_home.*
 import java.lang.ref.WeakReference
@@ -32,12 +34,14 @@ class PokemonListFragment : Fragment() {
 
     companion object {
         const val TAG = "PokemonListFragment"
+        const val FLOATING_TOAST_TIMOUT = 4000L
     }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mViewModel = ViewModelProvider(this).get(PokemonListViewModel::class.java)
+        mViewModel.getPokemons(weakActivity = WeakReference(requireActivity()))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -47,14 +51,29 @@ class PokemonListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        showWelcomeMessage()
+
         mViewModel.pokemonsLiveData.observe(viewLifecycleOwner, Observer { models ->
+            swipeToRefreshLayout.isRefreshing = false
             mIsPagingEnabled = true
             mAdapter.switchData(models)
         })
-
-        mViewModel.getPokemons(activity = WeakReference(requireActivity()))
+        mViewModel.errorLiveData.observe(viewLifecycleOwner, Observer { event ->
+            event.getContentIfNotHandled()?.let { message ->
+                FloatingToastDialog(requireContext(), message, FloatingToastType.Error).fade().show()
+            }
+        })
 
         initComponents()
+    }
+
+    private fun showWelcomeMessage() {
+        mViewModel.pokemonsLiveData.value ?: run {
+            FloatingToastDialog(requireContext(),
+                                R.string.app_name,
+                                R.string.welcome_message,
+                                FloatingToastType.Alert).timer(FLOATING_TOAST_TIMOUT).show()
+        }
     }
 
     private fun initComponents() {
@@ -63,12 +82,20 @@ class PokemonListFragment : Fragment() {
         pokemonRecyclerView.layoutManager = layoutManager
         mAdapter = PokemonListAdapter { id ->
             navController.navigate(PokemonListFragmentDirections.actionPokemonListFragmentToPokemonDetailsFragment(id))
-//            navController.navigate(R.id.action_pokemonListFragment_to_pokemonDetailsFragment)
+            //            navController.navigate(R.id.action_pokemonListFragment_to_pokemonDetailsFragment)
         }
         pokemonRecyclerView.adapter = mAdapter
 
         //Paging
         pokemonRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (mAdapter.itemCount > PokemonListViewModel.TOTAL_ITEMS && !recyclerView.canScrollVertically(1)) {
+                    FloatingToastDialog(requireContext(),
+                                        getString(R.string.end_of_list_message),
+                                        FloatingToastType.Warning).timer(FLOATING_TOAST_TIMOUT).show()
+                }
+            }
+
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (dy > 0) {
                     if (mIsPagingEnabled) {
@@ -77,16 +104,25 @@ class PokemonListFragment : Fragment() {
                         mLastVisiblesItems = layoutManager.findFirstVisibleItemPosition()
                         if (mVisibleItems + mLastVisiblesItems >= mTotalItems) {
                             mIsPagingEnabled = false
-                            mViewModel.nextPokemonsPage(mAdapter.mPokemons, requireActivity())
-                            Log.d(
-                                TAG, "Start loading pokemons page: visibleItems=$mVisibleItems," +
-                                        " lastVisiblesItems=$mLastVisiblesItems, totalItems=$mTotalItems"
-                            )
+                            mViewModel.nextPokemonsPage(mAdapter.mPokemons, WeakReference(requireActivity()))
+                            Log.d(TAG, "Loading pokemons page: visibleItems=$mVisibleItems, lastVisiblesItems=$mLastVisiblesItems, totalItems=$mTotalItems")
                         }
                     }
                 }
             }
         })
+
+        swipeToRefreshLayout.setOnRefreshListener {
+            if (mIsPagingEnabled && mAdapter.itemCount < PokemonListViewModel.TOTAL_ITEMS) {
+                mIsPagingEnabled = false
+                mViewModel.nextPokemonsPage(mAdapter.mPokemons, WeakReference(requireActivity()))
+            } else {
+                swipeToRefreshLayout.isRefreshing = false
+                FloatingToastDialog(requireContext(),
+                                    getString(R.string.end_of_list_message),
+                                    FloatingToastType.Warning).timer(FLOATING_TOAST_TIMOUT).show()
+            }
+        }
     }
 
 }

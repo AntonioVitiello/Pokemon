@@ -15,6 +15,7 @@ import com.vit.ant.pokemon.model.PokemonDetailsModel
 import com.vit.ant.pokemon.tools.Utils
 import com.vit.ant.pokemon.view.adapter.PokemonStatsAdapter
 import com.vit.ant.pokemon.view.adapter.PokemonTypeAdapter
+import com.vit.ant.pokemon.view.widget.FloatingToastDialog
 import com.vit.ant.pokemon.viewmodel.DetailPokemonViewModel
 import kotlinx.android.synthetic.main.fragment_pokemon_details.*
 import java.lang.ref.WeakReference
@@ -50,6 +51,11 @@ class PokemonDetailsFragment : Fragment() {
 
         mViewModel.pokemonDetailsLiveData.observe(viewLifecycleOwner, Observer { model ->
             fillPokemonDetails(model)
+        })
+        mViewModel.errorLiveData.observe(viewLifecycleOwner, Observer { event ->
+            event.getContentIfNotHandled()?.let { message ->
+                FloatingToastDialog(requireContext(), message, FloatingToastDialog.FloatingToastType.Error).fade().show()
+            }
         })
 
         mPokemonId = PokemonDetailsFragmentArgs.fromBundle(requireArguments()).id

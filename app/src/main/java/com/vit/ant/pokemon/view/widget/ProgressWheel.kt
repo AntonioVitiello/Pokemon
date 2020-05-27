@@ -89,7 +89,6 @@ class ProgressWheel(context: Context, attrs: AttributeSet?) : View(context, attr
         // pass the view has not gotten its final size yet (this happens first
         // at the start of the layout pass) so we have to use getMeasuredWidth()
         // and getMeasuredHeight().
-        var size = 0
         val width = measuredWidth
         val height = measuredHeight
         val widthWithoutPadding = width - getPaddingLeft() - getPaddingRight()
@@ -103,7 +102,7 @@ class ProgressWheel(context: Context, attrs: AttributeSet?) : View(context, attr
         // of the view might not be.
         val heightMode = MeasureSpec.getMode(heightMeasureSpec)
         val widthMode = MeasureSpec.getMode(widthMeasureSpec)
-        size = if (heightMode != MeasureSpec.UNSPECIFIED && widthMode != MeasureSpec.UNSPECIFIED) {
+        val size = if (heightMode != MeasureSpec.UNSPECIFIED && widthMode != MeasureSpec.UNSPECIFIED) {
             if (widthWithoutPadding > heightWithoutPadding) {
                 heightWithoutPadding
             } else {
