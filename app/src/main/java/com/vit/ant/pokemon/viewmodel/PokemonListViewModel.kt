@@ -1,7 +1,6 @@
 package com.vit.ant.pokemon.viewmodel
 
 import android.app.Application
-import android.content.Context
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.AndroidViewModel
@@ -28,8 +27,8 @@ class PokemonListViewModel(application: Application) : AndroidViewModel(applicat
 
     companion object {
         const val TAG = "HomeViewModel"
-        const val TOTAL_ITEMS = 800//items from 807 to 964 have no images
-        const val PAGE_LIMIT = 100 //number of items per page => 8 pages + 7 items
+        const val TOTAL_ITEMS = 964//total items
+        const val PAGE_LIMIT = 100 //number of items per page => 9 pages
     }
 
     fun nextPokemonsPage(mPokemons: List<PokemonModel>, weakActivity: WeakReference<FragmentActivity>) {
@@ -37,17 +36,15 @@ class PokemonListViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     fun getPokemons(
-        offset: Int = 0, pageLimit: Int = PAGE_LIMIT, mPokemons: List<PokemonModel>? = null,
+        offset: Int = 0, pageSize: Int = PAGE_LIMIT, mPokemons: List<PokemonModel>? = null,
         weakActivity: WeakReference<FragmentActivity>
     ) {
-        val limit = if (offset < TOTAL_ITEMS) pageLimit else
-            if (offset == TOTAL_ITEMS) 7 else 0
-        if (limit == 0) {
+        if (offset >= TOTAL_ITEMS) {
             reachedLimitLiveData.postValue(SingleEvent(true))
             return
         }
         compositeDisposable.add(
-            PokemonRepository.getPokemons(offset, limit)
+            PokemonRepository.getPokemons(offset, pageSize)
                 .manageLoading(weakActivity)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

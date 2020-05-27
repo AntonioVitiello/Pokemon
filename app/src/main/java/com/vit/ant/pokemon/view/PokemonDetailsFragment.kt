@@ -1,6 +1,7 @@
 package com.vit.ant.pokemon.view
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.vit.ant.pokemon.R
 import com.vit.ant.pokemon.model.PokemonDetailsModel
@@ -75,11 +77,7 @@ class PokemonDetailsFragment : Fragment() {
     }
 
     private fun fillPokemonDetails(detailsModel: PokemonDetailsModel) {
-        Picasso.get()
-            .load(detailsModel.imageUrl)
-            .placeholder(R.drawable.pokeball)
-            .error(R.drawable.pokeball)
-            .into(pokemonImage)
+        loadImage(detailsModel.imageUrl)
         pokemonName.text = detailsModel.name
         val heightString = Utils.oneDecimalFormater.format(detailsModel.height ?: 0.0)
         pokemonHeight.text = getString(R.string.pokemon_height, heightString)
@@ -87,6 +85,22 @@ class PokemonDetailsFragment : Fragment() {
         pokemonWeight.text = getString(R.string.pokemon_weight, weightString)
         mTypeAdapter.switchData(detailsModel.types)
         mStatsAdapter.switchData(detailsModel.stats)
+    }
+
+    private fun loadImage(imageUrl: String) {
+        Picasso.get()
+            .load(imageUrl)
+            .placeholder(R.drawable.pokeball)
+            .error(R.drawable.pokeball)
+            .into(pokemonImage, object : Callback {
+                override fun onSuccess() {
+                    Log.d(TAG, "Image loaded: ${imageUrl}")
+                }
+
+                override fun onError(exc: Exception) {
+                    Log.e(TAG, "Error while loading image: ${imageUrl}", exc);
+                }
+            })
     }
 
 }

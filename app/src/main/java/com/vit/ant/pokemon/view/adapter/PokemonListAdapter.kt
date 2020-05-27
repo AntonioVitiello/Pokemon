@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.vit.ant.pokemon.R
 import com.vit.ant.pokemon.model.PokemonModel
@@ -71,17 +72,28 @@ class PokemonListAdapter(private val listener: (Int) -> Unit) : RecyclerView.Ada
 
             with(itemView) {
                 pokemonName.text = pokemonModel.name
-                Log.d(TAG, "Start loading image: ${pokemonModel.imageUrl}")
-                Picasso.get()
-                    .load(pokemonModel.imageUrl)
-                    .placeholder(R.drawable.pokeball)
-                    .error(R.drawable.pokeball)
-                    .into(pokemonImage)
+                loadImage(pokemonModel.imageUrl)
 
                 setOnClickListener {
                     listener.invoke(pokemonModel.id)
                 }
             }
+        }
+
+        private fun View.loadImage(imageUrl: String) {
+            Picasso.get()
+                .load(imageUrl)
+                .placeholder(R.drawable.pokeball)
+                .error(R.drawable.pokeball)
+                .into(pokemonImage, object : Callback {
+                    override fun onSuccess() {
+                        Log.d(TAG, "Image loaded: ${imageUrl}")
+                    }
+
+                    override fun onError(exc: Exception) {
+                        Log.e(TAG, "Error while loading image: ${imageUrl}", exc);
+                    }
+                })
         }
     }
 
