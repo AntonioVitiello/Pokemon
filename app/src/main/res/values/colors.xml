@@ -6,7 +6,6 @@
     <color name="colorRipple">#9A525D66</color>
     <color name="colorGrass">#FF7CB342</color>
     <color name="colorChest">#FFFDD835</color>
-
     <color name="typeNormal">#FFA4A27A</color>
     <color name="typeDragon">#FF743BFB</color>
     <color name="typePsychic">#FFF15B85</color>
@@ -23,6 +22,9 @@
     <color name="typeDark">#FF745945</color>
     <color name="typeIce">#FF9BD8D8</color>
     <color name="typeWater">#FF658FF1</color>
+    <color name="typeRock">#FF020123</color>
+    <color name="typeFlying">#FF18FFFF</color>
+    <color name="typeFighting">#FFF30A0A</color>
     <color name="typeType">#FF658FA0</color>
     <color name="colorPrimary_50">#803F51B5</color>
     <color name="wheelEmpty">#80FFFFFF</color>

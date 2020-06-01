@@ -9,7 +9,7 @@
         android:id="@+id/pokemonListFragment"
         android:name="com.vit.ant.pokemon.view.PokemonListFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home">
+        tools:layout="@layout/fragment_pokemon_list">
         <action
             android:id="@+id/action_pokemonListFragment_to_pokemonDetailsFragment"
             app:destination="@id/pokemonDetailsFragment"

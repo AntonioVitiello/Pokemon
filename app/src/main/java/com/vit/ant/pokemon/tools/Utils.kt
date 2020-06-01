@@ -45,6 +45,9 @@ object Utils {
                 "dark" -> R.color.typeDark
                 "ice" -> R.color.typeIce
                 "water" -> R.color.typeWater
+                "rock" -> R.color.typeRock
+                "flying" -> R.color.typeFlying
+                "fighting" -> R.color.typeFighting
                 else -> R.color.typeType
             }
         )

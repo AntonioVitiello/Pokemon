@@ -12,12 +12,13 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vit.ant.pokemon.R
+import com.vit.ant.pokemon.model.PokemonModel
+import com.vit.ant.pokemon.tools.SingleEvent
 import com.vit.ant.pokemon.view.adapter.PokemonListAdapter
 import com.vit.ant.pokemon.view.widget.FloatingToastDialog
 import com.vit.ant.pokemon.view.widget.FloatingToastDialog.FloatingToastType
 import com.vit.ant.pokemon.viewmodel.PokemonListViewModel
-import kotlinx.android.synthetic.main.fragment_home.*
-import java.lang.ref.WeakReference
+import kotlinx.android.synthetic.main.fragment_pokemon_list.*
 
 
 /**
@@ -41,11 +42,11 @@ class PokemonListFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mViewModel = ViewModelProvider(this).get(PokemonListViewModel::class.java)
-        mViewModel.getPokemons(weakActivity = WeakReference(requireActivity()))
+        mViewModel.getPokemons()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        return inflater.inflate(R.layout.fragment_pokemon_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -53,27 +54,12 @@ class PokemonListFragment : Fragment() {
 
         showWelcomeMessage()
 
-        mViewModel.pokemonsLiveData.observe(viewLifecycleOwner, Observer { models ->
-            swipeToRefreshLayout.isRefreshing = false
-            mIsPagingEnabled = true
-            mAdapter.switchData(models)
-        })
-        mViewModel.errorLiveData.observe(viewLifecycleOwner, Observer { event ->
-            event.getContentIfNotHandled()?.let { message ->
-                FloatingToastDialog(requireContext(), message, FloatingToastType.Error).fade().show()
-            }
-        })
+        mViewModel.pokemonsLiveData.observe(viewLifecycleOwner, Observer { fillPokemonList(it) })
+        mViewModel.progressWheelLiveData.observe(viewLifecycleOwner, Observer { showProgressWheel(it) })
+        mViewModel.reachedLimitLiveData.observe(viewLifecycleOwner, Observer { showEndOfListDialog(it) })
+        mViewModel.errorLiveData.observe(viewLifecycleOwner, Observer { showErrorDialog(it) })
 
         initComponents()
-    }
-
-    private fun showWelcomeMessage() {
-        mViewModel.pokemonsLiveData.value ?: run {
-            FloatingToastDialog(requireContext(),
-                                R.string.app_name,
-                                R.string.welcome_message,
-                                FloatingToastType.Alert).timer(FLOATING_TOAST_TIMOUT).show()
-        }
     }
 
     private fun initComponents() {
@@ -89,11 +75,7 @@ class PokemonListFragment : Fragment() {
         //Paging
         pokemonRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                if (mAdapter.itemCount > PokemonListViewModel.TOTAL_ITEMS && !recyclerView.canScrollVertically(1)) {
-                    FloatingToastDialog(requireContext(),
-                                        getString(R.string.end_of_list_message),
-                                        FloatingToastType.Warning).timer(FLOATING_TOAST_TIMOUT).show()
-                }
+                //do nothing
             }
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -102,10 +84,13 @@ class PokemonListFragment : Fragment() {
                         mVisibleItems = layoutManager.childCount
                         mTotalItems = layoutManager.itemCount
                         mLastVisiblesItems = layoutManager.findFirstVisibleItemPosition()
-                        if (mVisibleItems + mLastVisiblesItems >= mTotalItems) {
+                        if (mVisibleItems * 2 + mLastVisiblesItems >= mTotalItems) {
                             mIsPagingEnabled = false
-                            mViewModel.nextPokemonsPage(mAdapter.mPokemons, WeakReference(requireActivity()))
-                            Log.d(TAG, "Loading pokemons page: visibleItems=$mVisibleItems, lastVisiblesItems=$mLastVisiblesItems, totalItems=$mTotalItems")
+                            mViewModel.nextPokemonsPage(mAdapter.mPokemons)
+                            Log.d(
+                                TAG,
+                                "Loading pokemons page: visibleItems=$mVisibleItems, lastVisiblesItems=$mLastVisiblesItems, totalItems=$mTotalItems"
+                            )
                         }
                     }
                 }
@@ -113,15 +98,42 @@ class PokemonListFragment : Fragment() {
         })
 
         swipeToRefreshLayout.setOnRefreshListener {
-            if (mIsPagingEnabled && mAdapter.itemCount < PokemonListViewModel.TOTAL_ITEMS) {
-                mIsPagingEnabled = false
-                mViewModel.nextPokemonsPage(mAdapter.mPokemons, WeakReference(requireActivity()))
-            } else {
-                swipeToRefreshLayout.isRefreshing = false
-                FloatingToastDialog(requireContext(),
-                                    getString(R.string.end_of_list_message),
-                                    FloatingToastType.Warning).timer(FLOATING_TOAST_TIMOUT).show()
-            }
+            mIsPagingEnabled = false
+            mViewModel.refreshPokemonList(mAdapter.itemCount)
+        }
+    }
+
+    private fun fillPokemonList(models: List<PokemonModel>?) {
+        swipeToRefreshLayout.isRefreshing = false
+        mIsPagingEnabled = true
+        mAdapter.switchData(models)
+    }
+
+    private fun showWelcomeMessage() {
+        mViewModel.pokemonsLiveData.value ?: run {
+            FloatingToastDialog(requireContext(), R.string.app_name, R.string.welcome_message, FloatingToastType.Alert)
+                .timer(FLOATING_TOAST_TIMOUT)
+                .show()
+        }
+    }
+
+    private fun showProgressWheel(event: SingleEvent<Boolean>) {
+        progressWheel.visibility = if (event.getContentIfNotHandled() == true) View.VISIBLE else View.GONE
+    }
+
+    private fun showEndOfListDialog(event: SingleEvent<Boolean>) {
+        if (event.getContentIfNotHandled() == true) {
+            FloatingToastDialog(requireContext(), getString(R.string.end_of_list_message), FloatingToastType.Warning)
+                .timer(FLOATING_TOAST_TIMOUT)
+                .show()
+        }
+    }
+
+    private fun showErrorDialog(event: SingleEvent<String>) {
+        event.getContentIfNotHandled()?.let { message ->
+            FloatingToastDialog(requireContext(), message, FloatingToastType.Error)
+                .fade()
+                .show()
         }
     }
 
