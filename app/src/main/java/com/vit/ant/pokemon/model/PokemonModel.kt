@@ -22,10 +22,7 @@ data class PokemonModel(val name: String, val id: Int) : Parcelable {
 
         other as PokemonModel
 
-        if (name != other.name) return false
-        if (id != other.id) return false
-
-        return true
+        return id == other.id && name == other.name
     }
 
     override fun hashCode(): Int {

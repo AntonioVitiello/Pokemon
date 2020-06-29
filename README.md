@@ -35,3 +35,4 @@ Caricare il codice su una repo pubblica utilizzando GIT.
 ![Detail section - 1](https://github.com/AntonioVitiello/Pokemon/blob/master/art/5_detail_1.png)
 ![Detail section - 2](https://github.com/AntonioVitiello/Pokemon/blob/master/art/6_detail_2.png)
 
+![Transition animations - 1](https://github.com/AntonioVitiello/Pokemon/blob/master/art/7_transitions.gif)

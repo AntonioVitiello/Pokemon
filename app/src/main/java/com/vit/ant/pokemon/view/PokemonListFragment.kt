@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vit.ant.pokemon.R
@@ -45,7 +46,11 @@ class PokemonListFragment : Fragment() {
         mViewModel.getPokemons()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_pokemon_list, container, false)
     }
 
@@ -55,8 +60,12 @@ class PokemonListFragment : Fragment() {
         showWelcomeMessage()
 
         mViewModel.pokemonsLiveData.observe(viewLifecycleOwner, Observer { fillPokemonList(it) })
-        mViewModel.progressWheelLiveData.observe(viewLifecycleOwner, Observer { showProgressWheel(it) })
-        mViewModel.reachedLimitLiveData.observe(viewLifecycleOwner, Observer { showEndOfListDialog(it) })
+        mViewModel.progressWheelLiveData.observe(
+            viewLifecycleOwner,
+            Observer { showProgressWheel(it) })
+        mViewModel.reachedLimitLiveData.observe(
+            viewLifecycleOwner,
+            Observer { showEndOfListDialog(it) })
         mViewModel.errorLiveData.observe(viewLifecycleOwner, Observer { showErrorDialog(it) })
 
         initComponents()
@@ -66,9 +75,15 @@ class PokemonListFragment : Fragment() {
         val navController = Navigation.findNavController(requireView())
         val layoutManager = GridLayoutManager(requireContext(), 2)
         pokemonRecyclerView.layoutManager = layoutManager
-        mAdapter = PokemonListAdapter { id ->
-            navController.navigate(PokemonListFragmentDirections.actionPokemonListFragmentToPokemonDetailsFragment(id))
-            //            navController.navigate(R.id.action_pokemonListFragment_to_pokemonDetailsFragment)
+        mAdapter = PokemonListAdapter { id, imageView ->
+
+            val extras = FragmentNavigatorExtras(imageView to id.toString(10))
+            val action =
+                PokemonListFragmentDirections.actionPokemonListFragmentToPokemonDetailsFragment(id)
+            navController.navigate(action, extras)
+
+//            navController.navigate(R.id.action_pokemonListFragment_to_pokemonDetailsFragment)
+//            navController.navigate(PokemonListFragmentDirections.actionPokemonListFragmentToPokemonDetailsFragment(id))
         }
         pokemonRecyclerView.adapter = mAdapter
 
@@ -111,19 +126,29 @@ class PokemonListFragment : Fragment() {
 
     private fun showWelcomeMessage() {
         mViewModel.pokemonsLiveData.value ?: run {
-            FloatingToastDialog(requireContext(), R.string.app_name, R.string.welcome_message, FloatingToastType.Alert)
+            FloatingToastDialog(
+                requireContext(),
+                R.string.app_name,
+                R.string.welcome_message,
+                FloatingToastType.Alert
+            )
                 .timer(FLOATING_TOAST_TIMOUT)
                 .show()
         }
     }
 
     private fun showProgressWheel(event: SingleEvent<Boolean>) {
-        progressWheel.visibility = if (event.getContentIfNotHandled() == true) View.VISIBLE else View.GONE
+        progressView.visibility =
+            if (event.getContentIfNotHandled() == true) View.VISIBLE else View.GONE
     }
 
     private fun showEndOfListDialog(event: SingleEvent<Boolean>) {
         if (event.getContentIfNotHandled() == true) {
-            FloatingToastDialog(requireContext(), getString(R.string.end_of_list_message), FloatingToastType.Warning)
+            FloatingToastDialog(
+                requireContext(),
+                getString(R.string.end_of_list_message),
+                FloatingToastType.Warning
+            )
                 .timer(FLOATING_TOAST_TIMOUT)
                 .show()
         }

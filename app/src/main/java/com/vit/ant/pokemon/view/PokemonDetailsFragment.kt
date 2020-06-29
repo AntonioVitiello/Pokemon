@@ -10,17 +10,18 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.transition.TransitionInflater
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.vit.ant.pokemon.R
 import com.vit.ant.pokemon.model.PokemonDetailsModel
+import com.vit.ant.pokemon.tools.SingleEvent
 import com.vit.ant.pokemon.tools.Utils
 import com.vit.ant.pokemon.view.adapter.PokemonStatsAdapter
 import com.vit.ant.pokemon.view.adapter.PokemonTypeAdapter
 import com.vit.ant.pokemon.view.widget.FloatingToastDialog
 import com.vit.ant.pokemon.viewmodel.DetailPokemonViewModel
 import kotlinx.android.synthetic.main.fragment_pokemon_details.*
-import java.lang.ref.WeakReference
 
 /**
  * Created by Vitiello Antonio
@@ -37,36 +38,40 @@ class PokemonDetailsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        sharedElementEnterTransition =
+            TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+
         mViewModel = ViewModelProvider(this).get(DetailPokemonViewModel::class.java)
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         return inflater.inflate(R.layout.fragment_pokemon_details, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mViewModel.pokemonDetailsLiveData.observe(viewLifecycleOwner, Observer { model ->
-            fillPokemonDetails(model)
-        })
-        mViewModel.errorLiveData.observe(viewLifecycleOwner, Observer { event ->
-            event.getContentIfNotHandled()?.let { message ->
-                FloatingToastDialog(requireContext(), message, FloatingToastDialog.FloatingToastType.Error).fade().show()
-            }
-        })
+        mViewModel.pokemonDetailsLiveData.observe(
+            viewLifecycleOwner,
+            Observer { fillPokemonDetails(it) })
+        mViewModel.errorLiveData.observe(viewLifecycleOwner, Observer { showErrorDialog(it) })
+        mViewModel.progressWheelLiveData.observe(
+            viewLifecycleOwner,
+            Observer { showProgressWheel(it) })
 
         mPokemonId = PokemonDetailsFragmentArgs.fromBundle(requireArguments()).id
-        mViewModel.getPokemonDetails(mPokemonId, WeakReference(requireActivity()))
+        mViewModel.getPokemonDetails(mPokemonId)
 
         initComponents()
     }
 
     private fun initComponents() {
+        pokemonImage.transitionName = mPokemonId.toString(10)
+
         typesRecyclerView.layoutManager = StaggeredGridLayoutManager(1, RecyclerView.HORIZONTAL)
         mTypeAdapter = PokemonTypeAdapter()
         typesRecyclerView.adapter = mTypeAdapter
@@ -94,13 +99,30 @@ class PokemonDetailsFragment : Fragment() {
             .error(R.drawable.pokeball)
             .into(pokemonImage, object : Callback {
                 override fun onSuccess() {
-                    Log.d(TAG, "Image loaded: ${imageUrl}")
+                    Log.d(TAG, "Image loaded: $imageUrl")
                 }
 
                 override fun onError(exc: Exception) {
-                    Log.e(TAG, "Error while loading image: ${imageUrl}", exc);
+                    Log.e(TAG, "Error while loading image: $imageUrl", exc)
                 }
             })
+    }
+
+    private fun showProgressWheel(event: SingleEvent<Boolean>) {
+        progressView.visibility =
+            if (event.getContentIfNotHandled() == true) View.VISIBLE else View.GONE
+    }
+
+    private fun showErrorDialog(event: SingleEvent<String>) {
+        event.getContentIfNotHandled()?.let { message ->
+            FloatingToastDialog(
+                requireContext(),
+                message,
+                FloatingToastDialog.FloatingToastType.Error
+            )
+                .fade()
+                .show()
+        }
     }
 
 }

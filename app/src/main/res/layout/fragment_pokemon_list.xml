@@ -20,22 +20,13 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
+            android:scrollbars="vertical"
             tools:listitem="@layout/home_list_item" />
 
-        <com.vit.ant.pokemon.view.widget.ProgressWheel
-            android:id="@+id/progressWheel"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center"
-            android:elevation="20dp"
+        <include
+            android:id="@+id/progressView"
+            layout="@layout/dialog_progress_wheel"
             android:visibility="gone"
-            app:pwAutoStart="true"
-            app:pwBarColor="@color/wheelSolid"
-            app:pwBarLength="40dp"
-            app:pwBarWidth="14dp"
-            app:pwRimColor="@color/wheelEmpty"
-            app:pwRimWidth="14dp"
-            app:pwSpinSpeed="4dp"
             tools:visibility="visible" />
 
     </FrameLayout>

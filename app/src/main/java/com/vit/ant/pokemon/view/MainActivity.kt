@@ -3,7 +3,6 @@ package com.vit.ant.pokemon.view
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.vit.ant.pokemon.R
-import com.vit.ant.pokemon.tools.swapFragment
 
 /**
  * Created by Vitiello Antonio

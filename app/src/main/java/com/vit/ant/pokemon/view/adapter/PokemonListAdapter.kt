@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Callback
@@ -17,13 +18,34 @@ import kotlinx.android.synthetic.main.home_list_item.view.*
 /**
  * Created by Vitiello Antonio
  */
-class PokemonListAdapter(private val listener: (Int) -> Unit) : RecyclerView.Adapter<PokemonListAdapter.ViewHolder>() {
+class PokemonListAdapter(private val listener: (Int, ImageView) -> Unit) :
+    RecyclerView.Adapter<PokemonListAdapter.ViewHolder>() {
     val mPokemons = mutableListOf<PokemonModel>()
     private val diffUtilCallback = object : DiffUtil.Callback() {
         lateinit var mNewPokemons: List<PokemonModel>
 
+        /**
+         * Called by the DiffUtil to decide whether two object represent the same Item.
+         * If items have unique ids, this method should check their id equality.
+         */
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             return mPokemons[oldItemPosition].id == mNewPokemons[newItemPosition].id
+        }
+
+        /**
+         * Checks whether two items have the same data.
+         * Called by DiffUtil only if areItemsTheSame returns true.
+         */
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return mPokemons[oldItemPosition] == mNewPokemons[newItemPosition]
+        }
+
+        /**
+         * If areItemTheSame return true and areContentsTheSame returns false,
+         * DiffUtil calls this method to get a payload about the change.
+         */
+        override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
+            return super.getChangePayload(oldItemPosition, newItemPosition)
         }
 
         override fun getOldListSize(): Int {
@@ -33,10 +55,6 @@ class PokemonListAdapter(private val listener: (Int) -> Unit) : RecyclerView.Ada
         override fun getNewListSize(): Int {
             return mNewPokemons.size
         }
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return mPokemons[oldItemPosition].name == mNewPokemons[newItemPosition].name
-        }
     }
 
     companion object {
@@ -44,7 +62,8 @@ class PokemonListAdapter(private val listener: (Int) -> Unit) : RecyclerView.Ada
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.home_list_item, parent, false)
+        val itemView =
+            LayoutInflater.from(parent.context).inflate(R.layout.home_list_item, parent, false)
         return ViewHolder(itemView)
     }
 
@@ -73,9 +92,9 @@ class PokemonListAdapter(private val listener: (Int) -> Unit) : RecyclerView.Ada
             with(itemView) {
                 pokemonName.text = pokemonModel.name
                 loadImage(pokemonModel.imageUrl)
-
+                pokemonImage.transitionName = pokemonModel.id.toString(10)
                 setOnClickListener {
-                    listener.invoke(pokemonModel.id)
+                    listener.invoke(pokemonModel.id, pokemonImage)
                 }
             }
         }
@@ -87,11 +106,11 @@ class PokemonListAdapter(private val listener: (Int) -> Unit) : RecyclerView.Ada
                 .error(R.drawable.pokeball)
                 .into(pokemonImage, object : Callback {
                     override fun onSuccess() {
-                        Log.d(TAG, "Image loaded: ${imageUrl}")
+                        Log.d(TAG, "Image loaded: $imageUrl")
                     }
 
                     override fun onError(exc: Exception) {
-                        Log.e(TAG, "Error while loading image: ${imageUrl}", exc);
+                        Log.e(TAG, "Error while loading image: $imageUrl", exc)
                     }
                 })
         }
