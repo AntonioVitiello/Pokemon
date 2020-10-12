@@ -46,18 +46,16 @@ class PokemonListFragment : Fragment() {
         mViewModel.getPokemons()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_pokemon_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        showWelcomeMessage()
+        if (mViewModel.pokemonsLiveData.value == null) {
+            view.postDelayed({ showWelcomeMessage() }, 800)
+        }
 
         mViewModel.pokemonsLiveData.observe(viewLifecycleOwner, Observer { fillPokemonList(it) })
         mViewModel.progressWheelLiveData.observe(
@@ -126,16 +124,9 @@ class PokemonListFragment : Fragment() {
     }
 
     private fun showWelcomeMessage() {
-        mViewModel.pokemonsLiveData.value ?: run {
-            FloatingToastDialog(
-                requireContext(),
-                R.string.app_name,
-                R.string.welcome_message,
-                FloatingToastType.Alert
-            )
-                .timer(FLOATING_TOAST_TIMOUT)
-                .show()
-        }
+        FloatingToastDialog(requireContext(), R.string.app_name, R.string.welcome_message, FloatingToastType.Alert)
+            .timer(FLOATING_TOAST_TIMOUT)
+            .show()
     }
 
     private fun showProgressWheel(event: SingleEvent<Boolean>) {
