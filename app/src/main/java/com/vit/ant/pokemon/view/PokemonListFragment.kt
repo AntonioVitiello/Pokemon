@@ -73,8 +73,9 @@ class PokemonListFragment : Fragment() {
 
     private fun initComponents() {
         val navController = Navigation.findNavController(requireView())
-        val layoutManager = GridLayoutManager(requireContext(), 2)
-        pokemonRecyclerView.layoutManager = layoutManager
+//        val layoutManager = GridLayoutManager(requireContext(), 2)
+//        pokemonRecyclerView.layoutManager = layoutManager
+        val layoutManager = pokemonRecyclerView.layoutManager as GridLayoutManager
         mAdapter = PokemonListAdapter { id, imageView ->
 
             val extras = FragmentNavigatorExtras(imageView to id.toString(10))

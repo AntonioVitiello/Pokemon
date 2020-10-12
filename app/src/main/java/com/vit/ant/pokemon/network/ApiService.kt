@@ -1,7 +1,7 @@
 package com.vit.ant.pokemon.network
 
-import com.vit.ant.pokemon.network.dto.PokemonDetailsResponse
-import com.vit.ant.pokemon.network.dto.PokemonResponse
+import com.vit.ant.pokemon.network.dto.details.PokemonDetailsResponse
+import com.vit.ant.pokemon.network.dto.list.PokemonResponse
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Path

@@ -1,9 +1,9 @@
-package com.vit.ant.pokemon.network.dto
+package com.vit.ant.pokemon.network.dto.details
 
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class Version(
+data class Species(
     @JsonProperty("name")
     val name: String?,
     @JsonProperty("url")

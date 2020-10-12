@@ -1,9 +1,9 @@
-package com.vit.ant.pokemon.network.dto
+package com.vit.ant.pokemon.network.dto.list
 
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class MoveX(
+data class Result(
     @JsonProperty("name")
     val name: String?,
     @JsonProperty("url")

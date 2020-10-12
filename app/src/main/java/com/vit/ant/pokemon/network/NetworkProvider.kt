@@ -2,8 +2,8 @@ package com.vit.ant.pokemon.network
 
 import android.util.Log
 import com.vit.ant.pokemon.BuildConfig
-import com.vit.ant.pokemon.network.dto.PokemonDetailsResponse
-import com.vit.ant.pokemon.network.dto.PokemonResponse
+import com.vit.ant.pokemon.network.dto.list.PokemonResponse
+import com.vit.ant.pokemon.network.dto.details.PokemonDetailsResponse
 import io.reactivex.Single
 import io.reactivex.plugins.RxJavaPlugins
 import okhttp3.OkHttpClient

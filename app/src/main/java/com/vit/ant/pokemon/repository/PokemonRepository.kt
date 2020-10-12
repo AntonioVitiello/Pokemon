@@ -1,8 +1,8 @@
 package com.vit.ant.pokemon.repository
 
 import com.vit.ant.pokemon.network.NetworkProvider
-import com.vit.ant.pokemon.network.dto.PokemonDetailsResponse
-import com.vit.ant.pokemon.network.dto.PokemonResponse
+import com.vit.ant.pokemon.network.dto.list.PokemonResponse
+import com.vit.ant.pokemon.network.dto.details.PokemonDetailsResponse
 import io.reactivex.Single
 
 /**

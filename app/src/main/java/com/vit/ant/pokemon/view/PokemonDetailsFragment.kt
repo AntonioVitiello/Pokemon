@@ -72,11 +72,11 @@ class PokemonDetailsFragment : Fragment() {
     private fun initComponents() {
         pokemonImage.transitionName = mPokemonId.toString(10)
 
-        typesRecyclerView.layoutManager = StaggeredGridLayoutManager(1, RecyclerView.HORIZONTAL)
+        //typesRecyclerView.layoutManager = StaggeredGridLayoutManager(1, RecyclerView.HORIZONTAL)
         mTypeAdapter = PokemonTypeAdapter()
         typesRecyclerView.adapter = mTypeAdapter
 
-        statsRecyclerView.layoutManager = StaggeredGridLayoutManager(2, RecyclerView.HORIZONTAL)
+        //statsRecyclerView.layoutManager = StaggeredGridLayoutManager(2, RecyclerView.HORIZONTAL)
         mStatsAdapter = PokemonStatsAdapter()
         statsRecyclerView.adapter = mStatsAdapter
     }

@@ -2,8 +2,8 @@ package com.vit.ant.pokemon.network.map
 
 import com.vit.ant.pokemon.model.PokemonDetailsModel
 import com.vit.ant.pokemon.model.PokemonModel
-import com.vit.ant.pokemon.network.dto.PokemonDetailsResponse
-import com.vit.ant.pokemon.network.dto.PokemonResponse
+import com.vit.ant.pokemon.network.dto.details.PokemonDetailsResponse
+import com.vit.ant.pokemon.network.dto.list.PokemonResponse
 import com.vit.ant.pokemon.tools.Utils.urlToId
 
 /**

@@ -1,4 +1,4 @@
-package com.vit.ant.pokemon.network.dto
+package com.vit.ant.pokemon.network.dto.details
 
 
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -19,5 +19,9 @@ data class Sprites(
     @JsonProperty("front_shiny")
     val frontShiny: String?,
     @JsonProperty("front_shiny_female")
-    val frontShinyFemale: Any?
+    val frontShinyFemale: Any?,
+    @JsonProperty("other")
+    val other: Other?,
+    @JsonProperty("versions")
+    val versions: Versions?
 )

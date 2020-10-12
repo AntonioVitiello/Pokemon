@@ -6,7 +6,8 @@
     android:layout_margin="6dp"
     android:background="@drawable/shape_pokemon_stats"
     android:orientation="vertical"
-    android:padding="6dp">
+    android:padding="6dp"
+    tools:showIn="@layout/fragment_pokemon_details">
     <!--    android:backgroundTint="@android:color/holo_green_light"-->
 
     <TextView
