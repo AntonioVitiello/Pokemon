@@ -58,16 +58,16 @@
 
     <TextView
         android:id="@+id/toastBody"
-        style="@style/blue_dark_normal_16"
+        style="@style/blue_dark_normal_14"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
         android:ellipsize="end"
-        android:maxLines="3"
         app:layout_constraintEnd_toEndOf="@id/toastTitle"
         app:layout_constraintStart_toStartOf="@id/toastTitle"
         app:layout_constraintTop_toTopOf="@id/floatingToastMiddleImage"
+        tools:maxLines="4"
         tools:text="@tools:sample/lorem/random" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -35,9 +35,10 @@
         <item name="android:textSize">12sp</item>
     </style>
 
-    <style name="blue_dark_normal_16">
+    <style name="blue_dark_normal_14">
         <item name="android:textColor">@android:color/holo_blue_dark</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:lineSpacingExtra">2dp</item>
     </style>
 
 </resources>
