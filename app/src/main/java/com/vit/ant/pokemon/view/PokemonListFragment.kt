@@ -1,7 +1,6 @@
 package com.vit.ant.pokemon.view
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,9 +29,6 @@ class PokemonListFragment : Fragment() {
     private lateinit var mViewModel: PokemonListViewModel
     private lateinit var mAdapter: PokemonListAdapter
     private var mIsPagingEnabled = true
-    private var mLastVisiblesItems = 0
-    private var mVisibleItems = 0
-    private var mTotalItems = 0
 
     companion object {
         const val TAG = "PokemonListFragment"
@@ -57,14 +53,15 @@ class PokemonListFragment : Fragment() {
             view.postDelayed({ showWelcomeMessage() }, 800)
         }
 
-        mViewModel.pokemonsLiveData.observe(viewLifecycleOwner, Observer { fillPokemonList(it) })
+        mViewModel.pokemonsLiveData.observe(viewLifecycleOwner, Observer(this::addToPokemonList))
+        mViewModel.refreshLiveData.observe(viewLifecycleOwner, Observer(this::refreshPokemonList))
         mViewModel.progressWheelLiveData.observe(
             viewLifecycleOwner,
             Observer { showProgressWheel(it) })
         mViewModel.reachedLimitLiveData.observe(
             viewLifecycleOwner,
             Observer { showEndOfListDialog(it) })
-        mViewModel.errorLiveData.observe(viewLifecycleOwner, Observer { showErrorDialog(it) })
+        mViewModel.errorLiveData.observe(viewLifecycleOwner, Observer(this::showErrorDialog))
 
         initComponents()
     }
@@ -77,13 +74,13 @@ class PokemonListFragment : Fragment() {
         mAdapter = PokemonListAdapter { id, imageView ->
 
             val extras = FragmentNavigatorExtras(imageView to id.toString(10))
-            val action =
-                PokemonListFragmentDirections.actionPokemonListFragmentToPokemonDetailsFragment(id)
+            val action = PokemonListFragmentDirections.actionPokemonListFragmentToPokemonDetailsFragment(id)
             navController.navigate(action, extras)
 
 //            navController.navigate(R.id.action_pokemonListFragment_to_pokemonDetailsFragment)
 //            navController.navigate(PokemonListFragmentDirections.actionPokemonListFragmentToPokemonDetailsFragment(id))
         }
+        pokemonRecyclerView.setHasFixedSize(true)
         pokemonRecyclerView.adapter = mAdapter
 
         //Paging
@@ -95,16 +92,13 @@ class PokemonListFragment : Fragment() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (dy > 0) {
                     if (mIsPagingEnabled) {
-                        mVisibleItems = layoutManager.childCount
-                        mTotalItems = layoutManager.itemCount
-                        mLastVisiblesItems = layoutManager.findFirstVisibleItemPosition()
-                        if (mVisibleItems * 2 + mLastVisiblesItems >= mTotalItems) {
+                        val visibleItemsCount = layoutManager.childCount
+                        val itemsPerPage = layoutManager.itemCount
+                        val prefetchLimit = itemsPerPage - (2 * visibleItemsCount) - 1
+                        val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+                        if (lastVisibleItemPosition >= prefetchLimit) {
                             mIsPagingEnabled = false
-                            mViewModel.nextPokemonsPage(mAdapter.mPokemons)
-                            Log.d(
-                                TAG,
-                                "Loading pokemons page: visibleItems=$mVisibleItems, lastVisiblesItems=$mLastVisiblesItems, totalItems=$mTotalItems"
-                            )
+                            mViewModel.nextPokemonsPage(mAdapter.itemCount)
                         }
                     }
                 }
@@ -117,10 +111,16 @@ class PokemonListFragment : Fragment() {
         }
     }
 
-    private fun fillPokemonList(models: List<PokemonModel>?) {
+    private fun addToPokemonList(models: List<PokemonModel>?) {
         swipeToRefreshLayout.isRefreshing = false
         mIsPagingEnabled = true
-        mAdapter.switchData(models)
+        mAdapter.switchWithAddedData(models)
+    }
+
+    private fun refreshPokemonList(models: List<PokemonModel>?) {
+        swipeToRefreshLayout.isRefreshing = false
+        mIsPagingEnabled = true
+        mAdapter.updateData(models)
     }
 
     private fun showWelcomeMessage() {

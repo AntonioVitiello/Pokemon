@@ -95,6 +95,7 @@ class PokemonDetailsFragment : Fragment() {
     private fun loadImage(imageUrl: String) {
         Picasso.get()
             .load(imageUrl)
+            .fit()
             .placeholder(R.drawable.pokeball)
             .error(R.drawable.pokeball)
             .into(pokemonImage, object : Callback {

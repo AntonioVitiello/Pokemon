@@ -21,41 +21,7 @@ import kotlinx.android.synthetic.main.home_list_item.view.*
 class PokemonListAdapter(private val listener: (Int, ImageView) -> Unit) :
     RecyclerView.Adapter<PokemonListAdapter.ViewHolder>() {
     val mPokemons = mutableListOf<PokemonModel>()
-    private val diffUtilCallback = object : DiffUtil.Callback() {
-        lateinit var mNewPokemons: List<PokemonModel>
-
-        /**
-         * Called by the DiffUtil to decide whether two object represent the same Item.
-         * If items have unique ids, this method should check their id equality.
-         */
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return mPokemons[oldItemPosition].id == mNewPokemons[newItemPosition].id
-        }
-
-        /**
-         * Checks whether two items have the same data.
-         * Called by DiffUtil only if areItemsTheSame returns true.
-         */
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return mPokemons[oldItemPosition] == mNewPokemons[newItemPosition]
-        }
-
-        /**
-         * If areItemTheSame return true and areContentsTheSame returns false,
-         * DiffUtil calls this method to get a payload about the change.
-         */
-        override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
-            return super.getChangePayload(oldItemPosition, newItemPosition)
-        }
-
-        override fun getOldListSize(): Int {
-            return mPokemons.size
-        }
-
-        override fun getNewListSize(): Int {
-            return mNewPokemons.size
-        }
-    }
+    val mDiffCallback = DiffCallback()
 
     companion object {
         const val TAG = "PokemonListAdapter"
@@ -73,17 +39,90 @@ class PokemonListAdapter(private val listener: (Int, ImageView) -> Unit) :
         holder.bindItem(mPokemons[position])
 
     fun switchData(data: List<PokemonModel>?) {
-        data?.let {
-            diffUtilCallback.mNewPokemons = it
-            val diffResult = DiffUtil.calculateDiff(diffUtilCallback)
+        mPokemons.clear()
+        if (data != null) {
+            mPokemons.addAll(data)
+        }
+        notifyDataSetChanged()
+    }
+
+    fun switchWithAddedData(data: List<PokemonModel>?) {
+        if (data == null || mPokemons.isEmpty()) {
+            switchData(data)
+        } else {
+            val prevSize = mPokemons.size
             mPokemons.clear()
-            mPokemons.addAll(it)
-            diffResult.dispatchUpdatesTo(this@PokemonListAdapter)
-        } ?: kotlin.run {
-            mPokemons.clear()
-            notifyDataSetChanged()
+            mPokemons.addAll(data)
+            notifyItemRangeInserted(prevSize, data.size)
         }
     }
+
+    fun addAll(data: List<PokemonModel>?) {
+        if (data == null || mPokemons.isEmpty()) {
+            switchData(data)
+        } else {
+            val prevSize = mPokemons.size
+            mPokemons.addAll(data)
+            notifyItemRangeInserted(prevSize, data.size)
+        }
+    }
+
+    fun updateData(data: List<PokemonModel>?) {
+        if (data == null || mPokemons.isEmpty()) {
+            switchData(data)
+        } else {
+            mDiffCallback.newData(data)
+            val diffResult = DiffUtil.calculateDiff(mDiffCallback)
+            mPokemons.clear()
+            mPokemons.addAll(data)
+            diffResult.dispatchUpdatesTo(this)
+        }
+    }
+
+
+    inner class DiffCallback : DiffUtil.Callback() {
+        private val newPokemons = mutableListOf<PokemonModel>()
+
+        fun newData(data: List<PokemonModel>) {
+            newPokemons.apply {
+                clear()
+                addAll(data)
+            }
+        }
+
+        override fun getOldListSize(): Int {
+            return mPokemons.size
+        }
+
+        override fun getNewListSize(): Int {
+            return newPokemons.size
+        }
+
+        /**
+         * Called by the DiffUtil to decide whether two object represent the same Item.
+         * If items have unique ids, this method should check their id equality.
+         */
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return mPokemons[oldItemPosition].id == newPokemons[newItemPosition].id
+        }
+
+        /**
+         * Checks whether two items have the same data.
+         * Called by DiffUtil only if areItemsTheSame returns true.
+         */
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return mPokemons[oldItemPosition] == newPokemons[newItemPosition]
+        }
+
+        /**
+         * If areItemTheSame return true and areContentsTheSame returns false,
+         * DiffUtil calls this method to get a payload about the change.
+         */
+        override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
+            return super.getChangePayload(oldItemPosition, newItemPosition)
+        }
+    }
+
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -102,6 +141,7 @@ class PokemonListAdapter(private val listener: (Int, ImageView) -> Unit) :
         private fun View.loadImage(imageUrl: String) {
             Picasso.get()
                 .load(imageUrl)
+                .fit()
                 .placeholder(R.drawable.pokeball)
                 .error(R.drawable.pokeball)
                 .into(pokemonImage, object : Callback {
