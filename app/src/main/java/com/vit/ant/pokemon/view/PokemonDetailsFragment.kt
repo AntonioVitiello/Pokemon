@@ -6,10 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.transition.TransitionInflater
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -27,7 +25,10 @@ import kotlinx.android.synthetic.main.fragment_pokemon_details.*
  * Created by Vitiello Antonio
  */
 class PokemonDetailsFragment : Fragment() {
-    private lateinit var mViewModel: DetailPokemonViewModel
+
+    //private lateinit var mViewModel: DetailPokemonViewModel
+    private val mViewModel by viewModels<DetailPokemonViewModel>()
+
     private lateinit var mTypeAdapter: PokemonTypeAdapter
     private lateinit var mStatsAdapter: PokemonStatsAdapter
     private var mPokemonId = 0
@@ -38,30 +39,21 @@ class PokemonDetailsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sharedElementEnterTransition =
-            TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+        sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
 
-        mViewModel = ViewModelProvider(this).get(DetailPokemonViewModel::class.java)
+//        mViewModel = ViewModelProvider(this).get(DetailPokemonViewModel::class.java)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_pokemon_details, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mViewModel.pokemonDetailsLiveData.observe(
-            viewLifecycleOwner,
-            Observer { fillPokemonDetails(it) })
+        mViewModel.pokemonDetailsLiveData.observe(viewLifecycleOwner, Observer { fillPokemonDetails(it) })
         mViewModel.errorLiveData.observe(viewLifecycleOwner, Observer { showErrorDialog(it) })
-        mViewModel.progressWheelLiveData.observe(
-            viewLifecycleOwner,
-            Observer { showProgressWheel(it) })
+        mViewModel.progressWheelLiveData.observe(viewLifecycleOwner, Observer { showProgressWheel(it) })
 
         mPokemonId = PokemonDetailsFragmentArgs.fromBundle(requireArguments()).id
         mViewModel.getPokemonDetails(mPokemonId)
@@ -93,11 +85,7 @@ class PokemonDetailsFragment : Fragment() {
     }
 
     private fun loadImage(imageUrl: String) {
-        Picasso.get()
-            .load(imageUrl)
-            .fit()
-            .placeholder(R.drawable.pokeball)
-            .error(R.drawable.pokeball)
+        Picasso.get().load(imageUrl).fit().placeholder(R.drawable.pokeball).error(R.drawable.pokeball)
             .into(pokemonImage, object : Callback {
                 override fun onSuccess() {
                     Log.d(TAG, "Image loaded: $imageUrl")
@@ -110,19 +98,12 @@ class PokemonDetailsFragment : Fragment() {
     }
 
     private fun showProgressWheel(event: SingleEvent<Boolean>) {
-        progressView.visibility =
-            if (event.getContentIfNotHandled() == true) View.VISIBLE else View.GONE
+        progressView.visibility = if (event.getContentIfNotHandled() == true) View.VISIBLE else View.GONE
     }
 
     private fun showErrorDialog(event: SingleEvent<String>) {
         event.getContentIfNotHandled()?.let { message ->
-            FloatingToastDialog(
-                requireContext(),
-                message,
-                FloatingToastDialog.FloatingToastType.Error
-            )
-                .fade()
-                .show()
+            FloatingToastDialog(requireContext(), message, FloatingToastDialog.FloatingToastType.Error).fade().show()
         }
     }
 
