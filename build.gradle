@@ -2,6 +2,9 @@
 
 buildscript {
     ext.kotlin_version = '1.4.21'
+    ext.hilt_version = '2.30.1-alpha'
+    ext.hilt_lifecycle_version = '1.0.0-alpha02'
+
     repositories {
         google()
         jcenter()
@@ -12,6 +15,9 @@ buildscript {
 
         //NAVIGATION
         classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.3.2'
+
+        //HILT
+        classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
     }
 }
 

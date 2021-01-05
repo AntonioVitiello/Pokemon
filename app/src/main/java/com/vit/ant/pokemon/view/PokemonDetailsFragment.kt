@@ -6,10 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.transition.TransitionInflater
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -21,13 +19,18 @@ import com.vit.ant.pokemon.view.adapter.PokemonStatsAdapter
 import com.vit.ant.pokemon.view.adapter.PokemonTypeAdapter
 import com.vit.ant.pokemon.view.widget.FloatingToastDialog
 import com.vit.ant.pokemon.viewmodel.DetailPokemonViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_pokemon_details.*
+import javax.inject.Inject
 
 /**
  * Created by Vitiello Antonio
  */
+@AndroidEntryPoint
 class PokemonDetailsFragment : Fragment() {
-    private lateinit var mViewModel: DetailPokemonViewModel
+
+    @Inject
+    lateinit var mViewModel: DetailPokemonViewModel
     private lateinit var mTypeAdapter: PokemonTypeAdapter
     private lateinit var mStatsAdapter: PokemonStatsAdapter
     private var mPokemonId = 0
@@ -38,32 +41,21 @@ class PokemonDetailsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sharedElementEnterTransition =
-            TransitionInflater.from(context).inflateTransition(android.R.transition.move)
-
-        mViewModel = ViewModelProvider(this).get(DetailPokemonViewModel::class.java)
+        sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move) //for Shared Element Transition
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_pokemon_details, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mViewModel.pokemonDetailsLiveData.observe(
-            viewLifecycleOwner,
-            Observer { fillPokemonDetails(it) })
-        mViewModel.errorLiveData.observe(viewLifecycleOwner, Observer { showErrorDialog(it) })
-        mViewModel.progressWheelLiveData.observe(
-            viewLifecycleOwner,
-            Observer { showProgressWheel(it) })
+        mViewModel.pokemonDetailsLiveData.observe(viewLifecycleOwner, ::fillPokemonDetails)
+        mViewModel.errorLiveData.observe(viewLifecycleOwner, ::showErrorDialog)
+        mViewModel.progressWheelLiveData.observe(viewLifecycleOwner, ::showProgressWheel)
 
-        mPokemonId = PokemonDetailsFragmentArgs.fromBundle(requireArguments()).id
+        mPokemonId = PokemonDetailsFragmentArgs.fromBundle(requireArguments()).id //Navigation: pass safe args
         mViewModel.getPokemonDetails(mPokemonId)
 
         initComponents()

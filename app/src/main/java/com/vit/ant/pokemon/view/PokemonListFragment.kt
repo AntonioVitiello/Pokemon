@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.GridLayoutManager
@@ -18,15 +17,19 @@ import com.vit.ant.pokemon.view.adapter.PokemonListAdapter
 import com.vit.ant.pokemon.view.widget.FloatingToastDialog
 import com.vit.ant.pokemon.view.widget.FloatingToastDialog.FloatingToastType
 import com.vit.ant.pokemon.viewmodel.PokemonListViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_pokemon_list.*
+import javax.inject.Inject
 
 
 /**
  * Created by Vitiello Antonio
  */
+@AndroidEntryPoint
 class PokemonListFragment : Fragment() {
 
-    private lateinit var mViewModel: PokemonListViewModel
+    @Inject
+    lateinit var mViewModel: PokemonListViewModel
     private lateinit var mAdapter: PokemonListAdapter
     private var mIsPagingEnabled = true
 
@@ -38,7 +41,6 @@ class PokemonListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mViewModel = ViewModelProvider(this).get(PokemonListViewModel::class.java)
         mViewModel.getPokemons()
     }
 
@@ -73,8 +75,9 @@ class PokemonListFragment : Fragment() {
         val layoutManager = pokemonRecyclerView.layoutManager as GridLayoutManager
         mAdapter = PokemonListAdapter { id, imageView ->
 
-            val extras = FragmentNavigatorExtras(imageView to id.toString(10))
-            val action = PokemonListFragmentDirections.actionPokemonListFragmentToPokemonDetailsFragment(id)
+            val extras = FragmentNavigatorExtras(imageView to id.toString(10)) //Navigation: for Shared Element Transition
+            val action =
+                PokemonListFragmentDirections.actionPokemonListFragmentToPokemonDetailsFragment(id) //Navigation: pass safe args
             navController.navigate(action, extras)
 
 //            navController.navigate(R.id.action_pokemonListFragment_to_pokemonDetailsFragment)

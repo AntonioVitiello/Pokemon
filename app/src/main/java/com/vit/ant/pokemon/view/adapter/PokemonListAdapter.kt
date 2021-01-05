@@ -144,6 +144,7 @@ class PokemonListAdapter(private val listener: (Int, ImageView) -> Unit) :
                 .fit()
                 .placeholder(R.drawable.pokeball)
                 .error(R.drawable.pokeball)
+//                .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(pokemonImage, object : Callback {
                     override fun onSuccess() {
                         Log.d(TAG, "Image loaded: $imageUrl")

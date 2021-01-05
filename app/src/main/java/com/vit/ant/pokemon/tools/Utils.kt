@@ -1,8 +1,10 @@
 package com.vit.ant.pokemon.tools
 
 import androidx.annotation.ColorInt
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import com.vit.ant.pokemon.PokemonApplication
 import com.vit.ant.pokemon.PokemonApplication.Companion.applicationContext
 import com.vit.ant.pokemon.R
 import com.vit.ant.pokemon.view.ProgressWheelDialog
@@ -64,6 +66,10 @@ object Utils {
         weakActivity.get()?.let { activity ->
             ProgressWheelDialog.dismiss(activity)
         }
+    }
+
+    fun getString(@StringRes resId: Int): String {
+        return PokemonApplication.applicationContext.getString(resId)
     }
 
 }
