@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.transition.TransitionInflater
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -21,7 +20,6 @@ import com.vit.ant.pokemon.view.widget.FloatingToastDialog
 import com.vit.ant.pokemon.viewmodel.DetailPokemonViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_pokemon_details.*
-import javax.inject.Inject
 
 /**
  * Created by Vitiello Antonio
@@ -29,8 +27,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class PokemonDetailsFragment : Fragment() {
 
-    @Inject
-    lateinit var mViewModel: DetailPokemonViewModel
+    private val mViewModel: DetailPokemonViewModel by viewModels()
     private lateinit var mTypeAdapter: PokemonTypeAdapter
     private lateinit var mStatsAdapter: PokemonStatsAdapter
     private var mPokemonId = 0
@@ -86,35 +83,35 @@ class PokemonDetailsFragment : Fragment() {
 
     private fun loadImage(imageUrl: String) {
         Picasso.get()
-            .load(imageUrl)
-            .fit()
-            .placeholder(R.drawable.pokeball)
-            .error(R.drawable.pokeball)
-            .into(pokemonImage, object : Callback {
-                override fun onSuccess() {
-                    Log.d(TAG, "Image loaded: $imageUrl")
-                }
+                .load(imageUrl)
+                .fit()
+                .placeholder(R.drawable.pokeball)
+                .error(R.drawable.pokeball)
+                .into(pokemonImage, object : Callback {
+                    override fun onSuccess() {
+                        Log.d(TAG, "Image loaded: $imageUrl")
+                    }
 
-                override fun onError(exc: Exception) {
-                    Log.e(TAG, "Error while loading image: $imageUrl", exc)
-                }
-            })
+                    override fun onError(exc: Exception) {
+                        Log.e(TAG, "Error while loading image: $imageUrl", exc)
+                    }
+                })
     }
 
     private fun showProgressWheel(event: SingleEvent<Boolean>) {
         progressView.visibility =
-            if (event.getContentIfNotHandled() == true) View.VISIBLE else View.GONE
+                if (event.getContentIfNotHandled() == true) View.VISIBLE else View.GONE
     }
 
     private fun showErrorDialog(event: SingleEvent<String>) {
         event.getContentIfNotHandled()?.let { message ->
             FloatingToastDialog(
-                requireContext(),
-                message,
-                FloatingToastDialog.FloatingToastType.Error
+                    requireContext(),
+                    message,
+                    FloatingToastDialog.FloatingToastType.Error
             )
-                .fade()
-                .show()
+                    .fade()
+                    .show()
         }
     }
 

@@ -2,6 +2,8 @@ package com.vit.ant.pokemon.viewmodel
 
 import android.content.Context
 import android.util.Log
+import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.vit.ant.pokemon.R
@@ -10,17 +12,16 @@ import com.vit.ant.pokemon.network.map.mapPokemon
 import com.vit.ant.pokemon.repository.PokemonRepository
 import com.vit.ant.pokemon.tools.SingleEvent
 import com.vit.ant.pokemon.tools.manageLoading
-import dagger.hilt.android.scopes.ActivityScoped
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import javax.inject.Inject
 
 /**
  * Created by Vitiello Antonio
  */
-@ActivityScoped
-class PokemonListViewModel @Inject constructor(private val context: Context, private val repository: PokemonRepository) : ViewModel() {
+class PokemonListViewModel @ViewModelInject constructor(@ApplicationContext private val context: Context, private val repository: PokemonRepository) :
+        ViewModel(), LifecycleObserver {
 
     private val compositeDisposable = CompositeDisposable()
     var pokemonsLiveData = MutableLiveData<List<PokemonModel>>()
@@ -45,28 +46,28 @@ class PokemonListViewModel @Inject constructor(private val context: Context, pri
             return
         }
         compositeDisposable.add(repository.getPokemons(offset, pageSize).manageLoading(progressWheelLiveData).subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread()).map(::mapPokemon).map { newItems ->
-                pokemonsLiveData.value?.toMutableList()?.apply {
-                    addAll(newItems)
-                } ?: newItems
-            }.subscribe({ models ->
-                pokemonsLiveData.value = models
-            }, {
-                val message = context.getString(R.string.generic_network_error_message)
-                errorLiveData.value = SingleEvent(message)
-                Log.e(TAG, null, it)
-            }))
+                .observeOn(AndroidSchedulers.mainThread()).map(::mapPokemon).map { newItems ->
+                    pokemonsLiveData.value?.toMutableList()?.apply {
+                        addAll(newItems)
+                    } ?: newItems
+                }.subscribe({ models ->
+                    pokemonsLiveData.value = models
+                }, {
+                    val message = context.getString(R.string.generic_network_error_message)
+                    errorLiveData.value = SingleEvent(message)
+                    Log.e(TAG, null, it)
+                }))
     }
 
     fun refreshPokemonList(listSize: Int) {
         compositeDisposable.add(repository.getPokemons(0, listSize).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-            .map(::mapPokemon).subscribe({ models ->
-                refreshLiveData.value = models
-            }, {
-                val message = context.getString(R.string.generic_network_error_message)
-                errorLiveData.value = SingleEvent(message)
-                Log.e(TAG, null, it)
-            }))
+                .map(::mapPokemon).subscribe({ models ->
+                    refreshLiveData.value = models
+                }, {
+                    val message = context.getString(R.string.generic_network_error_message)
+                    errorLiveData.value = SingleEvent(message)
+                    Log.e(TAG, null, it)
+                }))
     }
 
     override fun onCleared() {

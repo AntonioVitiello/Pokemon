@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -19,7 +20,6 @@ import com.vit.ant.pokemon.view.widget.FloatingToastDialog.FloatingToastType
 import com.vit.ant.pokemon.viewmodel.PokemonListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_pokemon_list.*
-import javax.inject.Inject
 
 
 /**
@@ -28,8 +28,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class PokemonListFragment : Fragment() {
 
-    @Inject
-    lateinit var mViewModel: PokemonListViewModel
+    private val mViewModel: PokemonListViewModel by activityViewModels()
     private lateinit var mAdapter: PokemonListAdapter
     private var mIsPagingEnabled = true
 
@@ -58,11 +57,11 @@ class PokemonListFragment : Fragment() {
         mViewModel.pokemonsLiveData.observe(viewLifecycleOwner, Observer(this::addToPokemonList))
         mViewModel.refreshLiveData.observe(viewLifecycleOwner, Observer(this::refreshPokemonList))
         mViewModel.progressWheelLiveData.observe(
-            viewLifecycleOwner,
-            Observer { showProgressWheel(it) })
+                viewLifecycleOwner,
+                Observer { showProgressWheel(it) })
         mViewModel.reachedLimitLiveData.observe(
-            viewLifecycleOwner,
-            Observer { showEndOfListDialog(it) })
+                viewLifecycleOwner,
+                Observer { showEndOfListDialog(it) })
         mViewModel.errorLiveData.observe(viewLifecycleOwner, Observer(this::showErrorDialog))
 
         initComponents()
@@ -77,7 +76,7 @@ class PokemonListFragment : Fragment() {
 
             val extras = FragmentNavigatorExtras(imageView to id.toString(10)) //Navigation: for Shared Element Transition
             val action =
-                PokemonListFragmentDirections.actionPokemonListFragmentToPokemonDetailsFragment(id) //Navigation: pass safe args
+                    PokemonListFragmentDirections.actionPokemonListFragmentToPokemonDetailsFragment(id) //Navigation: pass safe args
             navController.navigate(action, extras)
 
 //            navController.navigate(R.id.action_pokemonListFragment_to_pokemonDetailsFragment)
@@ -128,32 +127,32 @@ class PokemonListFragment : Fragment() {
 
     private fun showWelcomeMessage() {
         FloatingToastDialog(requireContext(), R.string.app_name, R.string.welcome_message, FloatingToastType.Alert)
-            .timer(FLOATING_TOAST_TIMOUT)
-            .show()
+                .timer(FLOATING_TOAST_TIMOUT)
+                .show()
     }
 
     private fun showProgressWheel(event: SingleEvent<Boolean>) {
         progressView.visibility =
-            if (event.getContentIfNotHandled() == true) View.VISIBLE else View.GONE
+                if (event.getContentIfNotHandled() == true) View.VISIBLE else View.GONE
     }
 
     private fun showEndOfListDialog(event: SingleEvent<Boolean>) {
         if (event.getContentIfNotHandled() == true) {
             FloatingToastDialog(
-                requireContext(),
-                getString(R.string.end_of_list_message),
-                FloatingToastType.Warning
+                    requireContext(),
+                    getString(R.string.end_of_list_message),
+                    FloatingToastType.Warning
             )
-                .timer(FLOATING_TOAST_TIMOUT)
-                .show()
+                    .timer(FLOATING_TOAST_TIMOUT)
+                    .show()
         }
     }
 
     private fun showErrorDialog(event: SingleEvent<String>) {
         event.getContentIfNotHandled()?.let { message ->
             FloatingToastDialog(requireContext(), message, FloatingToastType.Error)
-                .fade()
-                .show()
+                    .fade()
+                    .show()
         }
     }
 

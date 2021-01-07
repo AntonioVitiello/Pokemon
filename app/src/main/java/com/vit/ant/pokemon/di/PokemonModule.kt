@@ -56,12 +56,4 @@ object PokemonModule {
     @Provides
     fun providePokemonRepository(apiService: ApiService): PokemonRepository = PokemonRepository(apiService)
 
-    @Provides
-    fun providePokemonListViewModel(@ApplicationContext appContext: Context, repository: PokemonRepository) =
-        PokemonListViewModel(appContext, repository)
-
-    @Provides
-    fun provideDetailPokemonViewModel(@ApplicationContext appContext: Context, repository: PokemonRepository) =
-        DetailPokemonViewModel(appContext, repository)
-
 }
