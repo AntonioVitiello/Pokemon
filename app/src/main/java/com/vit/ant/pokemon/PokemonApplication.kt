@@ -20,7 +20,7 @@ class PokemonApplication : Application() {
         const val IMAGE_URL = "https://pokeres.bastionbot.org/images/pokemon"
         private lateinit var context: Context
 
-        val applicationContext
+        val appContext
             get() = context
     }
 
