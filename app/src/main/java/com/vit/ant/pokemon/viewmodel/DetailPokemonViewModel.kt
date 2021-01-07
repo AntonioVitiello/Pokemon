@@ -21,7 +21,9 @@ import io.reactivex.schedulers.Schedulers
  * Created by Vitiello Antonio
  */
 class DetailPokemonViewModel @ViewModelInject constructor(@ApplicationContext private val context: Context,
-                                                          private val repository: PokemonRepository) : ViewModel(), LifecycleObserver {
+                                                          private val repository: PokemonRepository) : ViewModel() {
+//class DetailPokemonViewModel @ViewModelInject constructor(@ApplicationContext private val context: Context,
+//   private val repository: PokemonRepository) : ViewModel(), LifecycleObserver {
 
     private val compositeDisposable = CompositeDisposable()
     var pokemonDetailsLiveData = MutableLiveData<PokemonDetailsModel>()
