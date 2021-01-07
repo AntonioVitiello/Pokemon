@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -27,7 +27,7 @@ import kotlinx.android.synthetic.main.fragment_pokemon_list.*
 class PokemonListFragment : Fragment() {
 
     //private lateinit var mViewModel: PokemonListViewModel
-    private val mViewModel by viewModels<PokemonListViewModel>()
+    private val mViewModel by activityViewModels<PokemonListViewModel>()
 
     private lateinit var mAdapter: PokemonListAdapter
     private var mIsPagingEnabled = true
@@ -57,8 +57,8 @@ class PokemonListFragment : Fragment() {
 
         mViewModel.pokemonsLiveData.observe(viewLifecycleOwner, Observer(this::addToPokemonList))
         mViewModel.refreshLiveData.observe(viewLifecycleOwner, Observer(this::refreshPokemonList))
-        mViewModel.progressWheelLiveData.observe(viewLifecycleOwner, Observer { showProgressWheel(it) })
-        mViewModel.reachedLimitLiveData.observe(viewLifecycleOwner, Observer { showEndOfListDialog(it) })
+        mViewModel.progressWheelLiveData.observe(viewLifecycleOwner, { showProgressWheel(it) })
+        mViewModel.reachedLimitLiveData.observe(viewLifecycleOwner, { showEndOfListDialog(it) })
         mViewModel.errorLiveData.observe(viewLifecycleOwner, Observer(this::showErrorDialog))
 
         initComponents()
@@ -123,7 +123,7 @@ class PokemonListFragment : Fragment() {
 
     private fun showWelcomeMessage() {
         FloatingToastDialog(requireContext(), R.string.app_name, R.string.welcome_message, FloatingToastType.Alert).timer(
-            FLOATING_TOAST_TIMOUT).show()
+                FLOATING_TOAST_TIMOUT).show()
     }
 
     private fun showProgressWheel(event: SingleEvent<Boolean>) {
@@ -133,7 +133,7 @@ class PokemonListFragment : Fragment() {
     private fun showEndOfListDialog(event: SingleEvent<Boolean>) {
         if (event.getContentIfNotHandled() == true) {
             FloatingToastDialog(requireContext(), getString(R.string.end_of_list_message), FloatingToastType.Warning).timer(
-                FLOATING_TOAST_TIMOUT).show()
+                    FLOATING_TOAST_TIMOUT).show()
         }
     }
 
