@@ -26,11 +26,6 @@
         <item name="android:windowExitAnimation">@android:anim/fade_out</item>
     </style>
 
-    <style name="FloatingToastSlideDownAnimation">
-        <item name="android:windowEnterAnimation">@anim/slide_down_floating_toast</item>
-        <item name="android:windowExitAnimation">@anim/slide_up_floating_toast</item>
-    </style>
-
     <style name="darker_gray_normal_12">
         <item name="android:textColor">@android:color/darker_gray</item>
         <item name="android:textSize">12sp</item>
@@ -40,6 +35,17 @@
         <item name="android:textColor">@android:color/holo_blue_dark</item>
         <item name="android:textSize">14sp</item>
         <item name="android:lineSpacingExtra">2dp</item>
+    </style>
+
+    <!-- Animation for FloatingToast dialog box -->
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_down_floating_toast</item>
+        <item name="android:windowExitAnimation">@anim/slide_up_floating_toast</item>
+    </style>
+
+    <!-- Theme for FloatingToast dialog box -->
+    <style name="DialogSlideAnim" parent="@android:style/Theme.Dialog">
+        <item name="android:windowAnimationStyle">@style/DialogAnimation</item>
     </style>
 
 </resources>
