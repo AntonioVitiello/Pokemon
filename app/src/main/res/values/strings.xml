@@ -12,4 +12,5 @@
     <string name="floating_toast_warning_title">Attenzione</string>
     <string name="floating_toast_alert_title">Attenzione</string>
     <string name="floating_toast_error_title">Errore</string>
+    <string name="press_two_times">Premi due volte per chiudere l\'app</string>
 </resources>
