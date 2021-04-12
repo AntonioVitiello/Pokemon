@@ -41,7 +41,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+        if (supportFragmentManager.fragments[0].childFragmentManager.backStackEntryCount > 0) {
+            canExit = true
+        }
         if (canExit) {
+            canExit = false
             super.onBackPressed()
         } else {
             canExit = true
