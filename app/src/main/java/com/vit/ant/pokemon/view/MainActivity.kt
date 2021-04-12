@@ -6,12 +6,10 @@ import android.os.Message
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.vit.ant.pokemon.R
-import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * Created by Vitiello Antonio
  */
-@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var mBackPressedHandler: Handler
 
