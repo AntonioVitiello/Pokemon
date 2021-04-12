@@ -15,8 +15,8 @@
             app:destination="@id/pokemonDetailsFragment"
             app:enterAnim="@anim/fade_in"
             app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/slide_down"
-            app:popExitAnim="@anim/slide_down_bottom" />
+            app:popEnterAnim="@anim/slide_down_enter"
+            app:popExitAnim="@anim/slide_down_exit" />
     </fragment>
 
     <fragment
