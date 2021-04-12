@@ -39,8 +39,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+        if (supportFragmentManager.fragments[0].childFragmentManager.backStackEntryCount > 0) {
+            canExit = true
+        }
         if (canExit) {
             super.onBackPressed()
+            canExit = false
         } else {
             canExit = true
             Toast.makeText(this, getString(R.string.press_two_times), Toast.LENGTH_SHORT).show()
