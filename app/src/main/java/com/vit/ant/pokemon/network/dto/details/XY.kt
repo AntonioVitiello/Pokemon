@@ -7,9 +7,9 @@ data class XY(
     @JsonProperty("front_default")
     val frontDefault: String?,
     @JsonProperty("front_female")
-    val frontFemale: Any?,
+    val frontFemale: String?,
     @JsonProperty("front_shiny")
     val frontShiny: String?,
     @JsonProperty("front_shiny_female")
-    val frontShinyFemale: Any?
+    val frontShinyFemale: String?
 )

@@ -7,19 +7,19 @@ data class Sprites(
     @JsonProperty("back_default")
     val backDefault: String?,
     @JsonProperty("back_female")
-    val backFemale: Any?,
+    val backFemale: String?,
     @JsonProperty("back_shiny")
     val backShiny: String?,
     @JsonProperty("back_shiny_female")
-    val backShinyFemale: Any?,
+    val backShinyFemale: String?,
     @JsonProperty("front_default")
     val frontDefault: String?,
     @JsonProperty("front_female")
-    val frontFemale: Any?,
+    val frontFemale: String?,
     @JsonProperty("front_shiny")
     val frontShiny: String?,
     @JsonProperty("front_shiny_female")
-    val frontShinyFemale: Any?,
+    val frontShinyFemale: String?,
     @JsonProperty("other")
     val other: Other?,
     @JsonProperty("versions")

@@ -5,9 +5,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.transition.TransitionInflater
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -39,7 +39,8 @@ class PokemonDetailsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+        sharedElementEnterTransition =
+            TransitionInflater.from(context).inflateTransition(android.R.transition.move) //for Shared Element Transition
 
 //        mViewModel = ViewModelProvider(this).get(DetailPokemonViewModel::class.java)
     }
@@ -51,11 +52,11 @@ class PokemonDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mViewModel.pokemonDetailsLiveData.observe(viewLifecycleOwner, Observer { fillPokemonDetails(it) })
-        mViewModel.errorLiveData.observe(viewLifecycleOwner, Observer { showErrorDialog(it) })
-        mViewModel.progressWheelLiveData.observe(viewLifecycleOwner, Observer { showProgressWheel(it) })
+        mViewModel.pokemonDetailsLiveData.observe(viewLifecycleOwner, ::fillPokemonDetails)
+        mViewModel.errorLiveData.observe(viewLifecycleOwner, ::showErrorDialog)
+        mViewModel.progressWheelLiveData.observe(viewLifecycleOwner, ::showProgressWheel)
 
-        mPokemonId = PokemonDetailsFragmentArgs.fromBundle(requireArguments()).id
+        mPokemonId = PokemonDetailsFragmentArgs.fromBundle(requireArguments()).id //Navigation: pass safe args
         mViewModel.getPokemonDetails(mPokemonId)
 
         initComponents()
@@ -85,7 +86,11 @@ class PokemonDetailsFragment : Fragment() {
     }
 
     private fun loadImage(imageUrl: String) {
-        Picasso.get().load(imageUrl).fit().placeholder(R.drawable.pokeball).error(R.drawable.pokeball)
+        Picasso.get()
+            .load(imageUrl)
+            .fit()
+            .placeholder(R.drawable.pokeball)
+            .error(R.drawable.pokeball)
             .into(pokemonImage, object : Callback {
                 override fun onSuccess() {
                     Log.d(TAG, "Image loaded: $imageUrl")
@@ -98,12 +103,14 @@ class PokemonDetailsFragment : Fragment() {
     }
 
     private fun showProgressWheel(event: SingleEvent<Boolean>) {
-        progressView.visibility = if (event.getContentIfNotHandled() == true) View.VISIBLE else View.GONE
+        progressView.isVisible = event.getContentIfNotHandled() == true
     }
 
     private fun showErrorDialog(event: SingleEvent<String>) {
         event.getContentIfNotHandled()?.let { message ->
-            FloatingToastDialog(requireContext(), message, FloatingToastDialog.FloatingToastType.Error).fade().show()
+            FloatingToastDialog(requireContext(), message, FloatingToastDialog.FloatingToastType.Error)
+                .fade()
+                .show()
         }
     }
 

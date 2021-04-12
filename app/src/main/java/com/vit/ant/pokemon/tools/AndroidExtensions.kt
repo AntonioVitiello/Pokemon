@@ -141,7 +141,7 @@ fun <T : TextView> T.typedText() = text?.toString() ?: ""
 fun <T : TextView> T.isEmpty() = text?.isEmpty() ?: true
 fun <T : TextView> T.isNotEmpty() = text?.isNotEmpty() ?: false
 fun <T : TextView> T.setHtml(@StringRes htmlRes: Int) {
-    setHtml(PokemonApplication.applicationContext.getString(htmlRes))
+    setHtml(PokemonApplication.appContext.getString(htmlRes))
 }
 
 fun <T : TextView> T.setHtml(html: String) {

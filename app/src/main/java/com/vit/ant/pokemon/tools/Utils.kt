@@ -1,9 +1,11 @@
 package com.vit.ant.pokemon.tools
 
 import androidx.annotation.ColorInt
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
-import com.vit.ant.pokemon.PokemonApplication.Companion.applicationContext
+import com.vit.ant.pokemon.PokemonApplication
+import com.vit.ant.pokemon.PokemonApplication.Companion.appContext
 import com.vit.ant.pokemon.R
 import com.vit.ant.pokemon.view.ProgressWheelDialog
 import java.lang.ref.WeakReference
@@ -27,7 +29,7 @@ object Utils {
     @ColorInt
     fun getColorByType(type: String?): Int {
         return ContextCompat.getColor(
-            applicationContext,
+            appContext,
             when (type) {
                 "normal" -> R.color.typeNormal
                 "dragon" -> R.color.typeDragon
@@ -64,6 +66,10 @@ object Utils {
         weakActivity.get()?.let { activity ->
             ProgressWheelDialog.dismiss(activity)
         }
+    }
+
+    fun getString(@StringRes resId: Int): String {
+        return PokemonApplication.appContext.getString(resId)
     }
 
 }

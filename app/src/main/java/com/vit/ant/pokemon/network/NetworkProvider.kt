@@ -18,12 +18,6 @@ import java.util.concurrent.TimeUnit
  * Created by Vitiello Antonio
  */
 class NetworkProvider {
-
-    init {
-        //default error handler to avoid app crash
-        RxJavaPlugins.setErrorHandler { t: Throwable -> Log.e(TAG, "RxJava plugin error", t) }
-    }
-
     companion object {
         const val TAG = "NetworkProvider"
         const val ENDPOINT = "https://pokeapi.co/api/v2/"

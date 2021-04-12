@@ -1,9 +1,12 @@
 package com.vit.ant.pokemon.view
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -31,6 +34,7 @@ class PokemonListFragment : Fragment() {
 
     private lateinit var mAdapter: PokemonListAdapter
     private var mIsPagingEnabled = true
+    private var showWelcomeMessage = true
 
     companion object {
         const val TAG = "PokemonListFragment"
@@ -51,10 +55,6 @@ class PokemonListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (mViewModel.pokemonsLiveData.value == null) {
-            view.postDelayed({ showWelcomeMessage() }, 800)
-        }
-
         mViewModel.pokemonsLiveData.observe(viewLifecycleOwner, Observer(this::addToPokemonList))
         mViewModel.refreshLiveData.observe(viewLifecycleOwner, Observer(this::refreshPokemonList))
         mViewModel.progressWheelLiveData.observe(viewLifecycleOwner, { showProgressWheel(it) })
@@ -64,6 +64,14 @@ class PokemonListFragment : Fragment() {
         initComponents()
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (showWelcomeMessage) {
+            showWelcomeMessage = false
+            Handler(Looper.getMainLooper()).post { showWelcomeMessage() }
+        }
+    }
+
     private fun initComponents() {
         val navController = Navigation.findNavController(requireView())
 //        val layoutManager = GridLayoutManager(requireContext(), 2)
@@ -71,8 +79,9 @@ class PokemonListFragment : Fragment() {
         val layoutManager = pokemonRecyclerView.layoutManager as GridLayoutManager
         mAdapter = PokemonListAdapter { id, imageView ->
 
-            val extras = FragmentNavigatorExtras(imageView to id.toString(10))
-            val action = PokemonListFragmentDirections.actionPokemonListFragmentToPokemonDetailsFragment(id)
+            val extras = FragmentNavigatorExtras(imageView to id.toString(10)) //Navigation: for Shared Element Transition
+            val action =
+                PokemonListFragmentDirections.actionPokemonListFragmentToPokemonDetailsFragment(id) //Navigation: pass safe args
             navController.navigate(action, extras)
 
 //            navController.navigate(R.id.action_pokemonListFragment_to_pokemonDetailsFragment)
@@ -122,24 +131,28 @@ class PokemonListFragment : Fragment() {
     }
 
     private fun showWelcomeMessage() {
-        FloatingToastDialog(requireContext(), R.string.app_name, R.string.welcome_message, FloatingToastType.Alert).timer(
-                FLOATING_TOAST_TIMOUT).show()
+        FloatingToastDialog(requireContext(), R.string.app_name, R.string.welcome_message, FloatingToastType.Alert)
+            .timer(FLOATING_TOAST_TIMOUT)
+            .show()
     }
 
     private fun showProgressWheel(event: SingleEvent<Boolean>) {
-        progressView.visibility = if (event.getContentIfNotHandled() == true) View.VISIBLE else View.GONE
+        progressView.isVisible = event.getContentIfNotHandled() == true
     }
 
     private fun showEndOfListDialog(event: SingleEvent<Boolean>) {
         if (event.getContentIfNotHandled() == true) {
-            FloatingToastDialog(requireContext(), getString(R.string.end_of_list_message), FloatingToastType.Warning).timer(
-                    FLOATING_TOAST_TIMOUT).show()
+            FloatingToastDialog(requireContext(), getString(R.string.end_of_list_message), FloatingToastType.Warning)
+                .timer(FLOATING_TOAST_TIMOUT)
+                .show()
         }
     }
 
     private fun showErrorDialog(event: SingleEvent<String>) {
         event.getContentIfNotHandled()?.let { message ->
-            FloatingToastDialog(requireContext(), message, FloatingToastType.Error).fade().show()
+            FloatingToastDialog(requireContext(), message, FloatingToastType.Error)
+                .fade()
+                .show()
         }
     }
 

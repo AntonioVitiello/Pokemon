@@ -18,9 +18,9 @@ import kotlinx.android.synthetic.main.dialog_floating_toast.*
 
 class FloatingToastDialog(
     context: Context,
-    val title: String,
-    val message: String,
-    val type: FloatingToastType
+    private val title: String,
+    private val message: String,
+    private val type: FloatingToastType
 ) : Dialog(context), View.OnClickListener {
 
     constructor(
