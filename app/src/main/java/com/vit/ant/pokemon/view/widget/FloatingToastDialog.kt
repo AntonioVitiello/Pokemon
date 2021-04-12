@@ -17,9 +17,7 @@ import kotlinx.android.synthetic.main.dialog_floating_toast.*
 
 
 class FloatingToastDialog(
-    context: Context,
-    private val title: String,
-    private val message: String,
+    context: Context, private val title: String, private val message: String,
     private val type: FloatingToastType
 ) : Dialog(context), View.OnClickListener {
 
@@ -77,7 +75,7 @@ class FloatingToastDialog(
     }
 
     fun slideDown(): FloatingToastDialog {
-        floatingToastAnimation = R.style.FloatingToastSlideDownAnimation
+        floatingToastAnimation = R.style.DialogSlideAnim
         return this
     }
 
@@ -104,6 +102,7 @@ class FloatingToastDialog(
             layoutParams.gravity = Gravity.TOP
             layoutParams.flags = layoutParams.flags and WindowManager.LayoutParams.FLAG_DIM_BEHIND.inv()
             floatingToastAnimation?.let { layoutParams.windowAnimations = it }
+            //layoutParams.windowAnimations = R.style.DialogSlideAnim
             with(window!!) {
                 attributes = layoutParams
                 setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
