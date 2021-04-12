@@ -28,6 +28,8 @@ data class PokemonDetailsResponse(
     val name: String?,
     @JsonProperty("order")
     val order: Int?,
+    @JsonProperty("past_types")
+    val pastTypes: List<Any>?,
     @JsonProperty("species")
     val species: Species?,
     @JsonProperty("sprites")

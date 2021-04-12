@@ -38,10 +38,8 @@ object PokemonModule {
         }
     }.build()
 
-
     @Provides
     fun provideApiService(): ApiService {
-
         return Retrofit.Builder()
             .baseUrl(ENDPOINT)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

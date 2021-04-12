@@ -32,6 +32,7 @@ class PokemonListFragment : Fragment() {
     lateinit var mViewModel: PokemonListViewModel
     private lateinit var mAdapter: PokemonListAdapter
     private var mIsPagingEnabled = true
+    private var showWelcomeMessage = true
 
     companion object {
         const val TAG = "PokemonListFragment"
@@ -51,21 +52,21 @@ class PokemonListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (mViewModel.pokemonsLiveData.value == null) {
-            view.postDelayed({ showWelcomeMessage() }, 800)
-        }
-
         mViewModel.pokemonsLiveData.observe(viewLifecycleOwner, Observer(this::addToPokemonList))
         mViewModel.refreshLiveData.observe(viewLifecycleOwner, Observer(this::refreshPokemonList))
-        mViewModel.progressWheelLiveData.observe(
-            viewLifecycleOwner,
-            Observer { showProgressWheel(it) })
-        mViewModel.reachedLimitLiveData.observe(
-            viewLifecycleOwner,
-            Observer { showEndOfListDialog(it) })
+        mViewModel.progressWheelLiveData.observe(viewLifecycleOwner, { showProgressWheel(it) })
+        mViewModel.reachedLimitLiveData.observe(viewLifecycleOwner, { showEndOfListDialog(it) })
         mViewModel.errorLiveData.observe(viewLifecycleOwner, Observer(this::showErrorDialog))
 
         initComponents()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (showWelcomeMessage) {
+            showWelcomeMessage = false
+            showWelcomeMessage()
+        }
     }
 
     private fun initComponents() {

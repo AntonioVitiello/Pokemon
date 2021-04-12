@@ -1,7 +1,6 @@
 package com.vit.ant.pokemon
 
 import android.app.Application
-import android.content.Context
 import android.util.Log
 import com.squareup.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
@@ -18,15 +17,15 @@ class PokemonApplication : Application() {
     companion object {
         const val TAG = "PokemonApplication"
         const val IMAGE_URL = "https://pokeres.bastionbot.org/images/pokemon"
-        private lateinit var context: Context
+        private lateinit var application: Application
 
         val appContext
-            get() = context
+            get() = application.applicationContext
     }
 
     override fun onCreate() {
         super.onCreate()
-        context = applicationContext
+        application = this
 
         //RxJava default error handler to avoid app crash
         RxJavaPlugins.setErrorHandler { thr: Throwable -> Log.e(TAG, "Error on RxJava plugin.", thr) }
