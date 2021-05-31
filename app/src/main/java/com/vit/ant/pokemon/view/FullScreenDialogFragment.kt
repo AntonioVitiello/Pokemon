@@ -2,6 +2,7 @@ package com.vit.ant.pokemon.view
 
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.View
 import androidx.fragment.app.DialogFragment
 import com.vit.ant.pokemon.R
 
@@ -16,9 +17,7 @@ abstract class FullScreenDialogFragment : DialogFragment() {
         isCancelable = false
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         dialog?.setOnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_BACK) {
                 //This is the filter

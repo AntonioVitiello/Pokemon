@@ -75,7 +75,8 @@ class FloatingToastDialog(
     }
 
     fun slideDown(): FloatingToastDialog {
-        floatingToastAnimation = R.style.DialogSlideAnim
+        //floatingToastAnimation = R.style.DialogSlideAnim
+        floatingToastAnimation = R.style.DialogAnimation
         return this
     }
 
@@ -102,7 +103,9 @@ class FloatingToastDialog(
             layoutParams.gravity = Gravity.TOP
             layoutParams.flags = layoutParams.flags and WindowManager.LayoutParams.FLAG_DIM_BEHIND.inv()
             floatingToastAnimation?.let { layoutParams.windowAnimations = it }
-            //layoutParams.windowAnimations = R.style.DialogSlideAnim
+            //layoutParams.windowAnimations = R.style.DialogAnim
+            //layoutParams.windowAnimations = android.R.style.Animation_Translucent
+            layoutParams.windowAnimations = R.style.DialogAnimation
             with(window!!) {
                 attributes = layoutParams
                 setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
